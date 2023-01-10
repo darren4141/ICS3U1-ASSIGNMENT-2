@@ -36,6 +36,11 @@ public class SaveDesmond {
                 command = SD.inpString("Enter a command");
                 SD.readCommand(command);
             }while(!validCommand);
+
+            do{
+                SD.desWalk();
+
+            }while(!validCommand);
         }
 
 
@@ -127,20 +132,48 @@ public class SaveDesmond {
 
     }
 
-    public void move(int target, int direction){
-        switch(direction){
-            case 1:
-
-        }
-    }
-
     public int roll(int min, int max){
         return (int)Math.round((Math.random()*max) + min);
     }
 
     public void desWalk(){
         int direction = SD.roll(1, 4);
-        SD.move(2, direction);
+        switch(direction){
+            case 1:
+                if(desY != 9){
+                    desY++;
+                    validCommand = true;
+                }else{
+                    validCommand = false;
+                }
+                break;
+            case 2:
+                if(desY != 0){
+                    desY--;
+                    validCommand = true;
+                }else{
+                    validCommand = false;
+                }
+                break;
+            case 3:
+                if(desX != 9){
+                    desX++;
+                    validCommand = true;
+                }else{
+                    validCommand = false;
+                }
+                break;
+            case 4:
+                if(desX != 0){
+                    desX--;
+                    validCommand = true;
+                }else{
+                    validCommand = false;
+                }
+                break;
+            default:
+                validCommand = false;
+        }
     }
 
 }
