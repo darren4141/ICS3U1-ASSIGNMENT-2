@@ -19,6 +19,8 @@ public class SaveDesmond {
         String name;
         String command;
         String [][] grid;
+        String status;
+
 
         boolean found = false;
         boolean won = false;
@@ -29,9 +31,19 @@ public class SaveDesmond {
         name = SD.inpString("What is your name?");
 
         while(!found){
+
+            if((Math.abs(desX-playX) + Math.abs(desY-playY) <= 2)){
+                status = "Very hot!";
+            }else if((Math.abs(desX-playX) + Math.abs(desY-playY) <= 4)){
+                status = "Getting warmer!";
+            }else{
+                status = "Pretty cold!";
+            }
+
             moves++;
             System.out.println("MOVES: " + moves + ", CURRENT LOCATION: (" + playX + ", " + playY + ")");
             System.out.println("Find DESMOND!");
+            System.out.println(status);
             grid = SD.fillArr(playX, playY, found);
             SD.printArr(grid);
 
@@ -122,7 +134,7 @@ public class SaveDesmond {
 
     public void readCommand(String command){
         if(command.equalsIgnoreCase("S")){
-            if(playY != 9){
+            if(playY != COL-1){
                 playY++;
                 validCommand = true;
             }else{
@@ -143,7 +155,7 @@ public class SaveDesmond {
         }
 
         if(command.equalsIgnoreCase("A")){
-            if(playX != 0){
+            if(playX != ROW-1){
                 playX--;
                 validCommand = true;
             }else{
@@ -172,7 +184,7 @@ public class SaveDesmond {
         int direction = SD.roll(1, 4);
         switch(direction){
             case 1:
-                if(desY != 9){
+                if(desY != COL-1){
                     desY++;
                     validCommand = true;
                 }else{
@@ -188,7 +200,7 @@ public class SaveDesmond {
                 }
                 break;
             case 3:
-                if(desX != 9){
+                if(desX != ROW-1){
                     desX++;
                     validCommand = true;
                 }else{
