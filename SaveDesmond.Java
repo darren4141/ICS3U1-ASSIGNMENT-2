@@ -66,7 +66,7 @@ public class SaveDesmond {
             System.out.print(i + " ");
             for(int j = 0; j < grid[i].length; j++)
                 System.out.print(grid[i][j]);
-                
+
             System.out.print(" " + i);
             System.out.println();
         }
@@ -77,53 +77,53 @@ public class SaveDesmond {
 
     public String inpString(String msg) throws IOException{
 
-    System.out.println(msg);
-    String input;
-    input = br.readLine();
-    return input;
+        System.out.println(msg);
+        String input;
+        input = br.readLine();
+        return input;
     }
 
     public void readCommand(String command){
-    if(command.equalsIgnoreCase("S")){
-    if(playY != 9){
-    playY++;
-    validCommand = true;
-    }else{
-    validCommand = false;
-    System.out.println("You can't go out of bounds!");
-    }
+        if(command.equalsIgnoreCase("S")){
+            if(playY != 9){
+                playY++;
+                validCommand = true;
+            }else{
+                validCommand = false;
+                System.out.println("You can't go out of bounds!");
+            }
 
-    }
+        }
 
-    if(command.equalsIgnoreCase("W")){
-    if(playY != 0){
-    playY--;
-    validCommand = true;
-    }else{
-    validCommand = false;
-    System.out.println("You can't go out of bounds!");
-    }
-    }
+        if(command.equalsIgnoreCase("W")){
+            if(playY != 0){
+                playY--;
+                validCommand = true;
+            }else{
+                validCommand = false;
+                System.out.println("You can't go out of bounds!");
+            }
+        }
 
-    if(command.equalsIgnoreCase("A")){
-    if(playX != 0){
-    playX--;
-    validCommand = true;
-    }else{
-    validCommand = false;
-    System.out.println("You can't go out of bounds!");
-    }
-    }
+        if(command.equalsIgnoreCase("A")){
+            if(playX != 0){
+                playX--;
+                validCommand = true;
+            }else{
+                validCommand = false;
+                System.out.println("You can't go out of bounds!");
+            }
+        }
 
-    if(command.equalsIgnoreCase("D")){
-    if(playX != 9){
-    playX++;
-    validCommand = true;
-    }else{
-    validCommand = false;
-    System.out.println("You can't go out of bounds!");
-    }
-    }
+        if(command.equalsIgnoreCase("D")){
+            if(playX != 9){
+                playX++;
+                validCommand = true;
+            }else{
+                validCommand = false;
+                System.out.println("You can't go out of bounds!");
+            }
+        }
 
     }
 
