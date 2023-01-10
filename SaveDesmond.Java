@@ -3,7 +3,7 @@ public class SaveDesmond {
     static final int ROW = 10;
     static final int COL = 10;
     static final String LETTERCORDS = "   A  B  C  D  E  F  G  H  I  J";
-    static final String PLAYER = "O";
+    static String player = "O";
     static final String DESMOND = "D";
     static int playX = 0;
     static int playY = 0;
@@ -18,7 +18,9 @@ public class SaveDesmond {
         int moves = 0;
         String name;
         String command;
+        String [][] grid;
 
+        boolean found = false;
         boolean won = false;
 
         desX = SD.roll(0, 9);
@@ -26,10 +28,36 @@ public class SaveDesmond {
 
         name = SD.inpString("What is your name?");
 
+        while(!found){
+            moves++;
+            System.out.println("MOVES: " + moves + ", CURRENT LOCATION: (" + playX + ", " + playY + ")");
+            System.out.println("Find DESMOND!");
+            grid = SD.fillArr(playX, playY, found);
+            SD.printArr(grid);
+
+            do{
+                SD.desWalk();
+
+            }while(!validCommand);
+
+            do{
+                command = SD.inpString("Enter a command");
+                SD.readCommand(command);
+            }while(!validCommand);
+
+            if((desX == playX) && (desY == playY)){
+                found = true;
+                System.out.println("You saved Desmond! Bring him back to the upper left corner!");
+            }
+        }
+
+        player = "@";
+
         while(!won){
             moves++;
             System.out.println("MOVES: " + moves + ", CURRENT LOCATION: (" + playX + ", " + playY + ")");
-            String [][] grid = SD.fillArr(playX, playY);
+            System.out.println("Bring DESMOND to safety!");
+            grid = SD.fillArr(playX, playY, found);
             SD.printArr(grid);
 
             do{
@@ -37,24 +65,28 @@ public class SaveDesmond {
                 SD.readCommand(command);
             }while(!validCommand);
 
-            do{
-                SD.desWalk();
+            if((playX == 0) && (playY == 0)){
+                System.out.println("You saved DESMOND!");
+                won = true;
+                grid = SD.fillArr(playX, playY, found);
+                SD.printArr(grid);
 
-            }while(!validCommand);
+            }
         }
 
+        System.out.println("You took " + moves + " steps!");
 
 
     }
 
-    public String[][] fillArr(int playX, int playY){
+    public String[][] fillArr(int playX, int playY, boolean found){
         String [][] grid = new String[ROW][COL];
         for(int i = 0; i < grid.length; i++){
             for(int j = 0; j < grid[i].length; j++){
                 grid[i][j] = "[ ]";
                 if((i == playY) && (j == playX)){
-                    grid[i][j] = "["+PLAYER+"]";
-                }else if((i == desY) && (j == desX)){
+                    grid[i][j] = "["+player+"]";
+                }else if((i == desY) && (j == desX) && (!found)){
                     grid[i][j] = "["+DESMOND+"]";
                 }
             }
