@@ -6,24 +6,31 @@ public class SaveDesmond {
     static final int NUMZOMBIES = 5;
     static final String LETTERCORDS = "   A  B  C  D  E  F  G  H  I  J";
     static String player = "O";
-    static final String DESMOND = "D";
-    static final String ZOMBIE = "Z";
-    static int playX = 0;
-    static int playY = 0;
+    static String desmond;
+    static String zombie;
+    static int playX;
+    static int playY;
     static int desX;
     static int desY;
     static int [][] zombies = new int [5][2];
-    static boolean validCommand = true;
+    static boolean validCommand;
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static SaveDesmond SD = new SaveDesmond();
 
 
     public static void main(String[]args) throws IOException{
+        playX = 0;
+        playY = 0;
         int moves = 0;
+        int mode;
         String name;
         String command;
+        String[]menu = new String[COL];
+        for(int i = 0; i < COL; i++) menu[i] = "";
+        menu[0] = "MENU:";
+        menu[2] = "Past moves: ";
+        menu[6] = "Cheat codes: <CHEAT> <QUIT> <WIN>";
         String [][] grid;
-        String status;
         LinkedList<String> searched = new LinkedList<String>();
 
 
@@ -35,32 +42,67 @@ public class SaveDesmond {
         for(int i = 0; i < zombies.length; i++){
             zombies[i][0] = SD.roll(0,9);
             zombies[i][1] = SD.roll(0,9);
-
         }
+
+        System.out.println("\n\n<SAVE DESMOND>");
+        System.out.println("|Welcome! In this game you <O> will save Desmond <D>");
+        System.out.println("|Make sure you don't hit any zombies <Z>");
+        System.out.println("|Desmond and the zombies will move randomly in one direction each turn");
+        System.out.println("|Once you save Desmond, bring him to the upper left corner");
+        System.out.println("|What mode would you like to play?\n|1. Easy (Zombies and Desmond are visible)\n|2. Medium (Desmond is invisible)\n|3. Hard (Desmond and Zombies are invisible)\n|4. Exit");
+
+        mode = Integer.parseInt(br.readLine());
+        if(mode == 1){
+            zombie = "Z";
+            desmond = "D";
+        }else if(mode == 2){
+            zombie = "Z";
+            desmond = " ";
+        }else if(mode == 3){
+            zombie = " ";
+            desmond = " ";
+        }else if(mode == 4){
+            System.out.println("Goodbye, come again!");
+            return;
+        }
+
 
         name = SD.inpString("What is your name?");
 
         while(!found){
             searched.add("(" + playX + ", " + playY + ")");
             if((Math.abs(desX-playX) + Math.abs(desY-playY) <= 2)){
-                status = "Very hot!";
+                menu[1] = "Distance from Desmond: Very hot!";
             }else if((Math.abs(desX-playX) + Math.abs(desY-playY) <= 4)){
-                status = "Getting warmer!";
+                menu[1] = "Distance from Desmond: Getting warmer!";
             }else{
-                status = "Pretty cold!";
+                menu[1] = "Distance from Desmond: Pretty cold!";
             }
 
             moves++;
-            System.out.println("MOVES: " + moves + ", CURRENT LOCATION: (" + playX + ", " + playY + ")");
-            System.out.println("Past moves:");
-            for(int i = 0; i < searched.size(); i++){
-                System.out.print(searched.get(i) + " ");
+            menu[3] = "MOVES: " + moves;
+            menu[4] = "CURRENT LOCATION: (" + playX + ", " + playY + ")";
+
+            if(moves <= 5){
+                menu[2] += searched.get(moves-1) + " ";
+            }else{
+                menu[2] = "Past moves: ";
+                for(int i = moves-6; i < moves; i++){
+                    menu[2] += searched.get(i) + " ";
+                }
+
+            }
+
+            
+            menu[5] = "Zombie locations: ";
+
+            for(int i = 0; i < zombies.length; i++){
+                menu[5] += "(" + zombies[i][0] + ", " + zombies[i][1] + ")";
             }
 
             System.out.println("\nFind DESMOND!");
-            System.out.println(status);
             grid = SD.fillArr(playX, playY, found, zombies);
-            SD.printArr(grid);
+            SD.printArr(grid, menu);
 
             for(int i = 0; i < NUMZOMBIES; i++){
                 do{
@@ -73,20 +115,16 @@ public class SaveDesmond {
 
             }while(!validCommand);
 
-            for(int i = 0; i < NUMZOMBIES; i++){
-                do{
-                    SD.zombWalk(grid, "[D]", i);
-                }while(!validCommand);
-            }
-
             do{
                 command = SD.inpString("Enter a command");
-                SD.readCommand(command);
+                SD.readCommand(command, moves);
             }while(!validCommand);
 
             for(int i = 0; i < NUMZOMBIES; i++){
-                if((playX == zombies[i][1]) && (playX == zombies[i][0])){
+                if((playX == zombies[i][0]) && (playY == zombies[i][1])){
                     System.out.println("You died!");
+                    grid = SD.fillArr(playX, playY, found, zombies);
+                    SD.printArr(grid, menu);
                     SD.endGame(false, moves);
                 }
 
@@ -102,10 +140,8 @@ public class SaveDesmond {
 
         while(!won){
             moves++;
-            System.out.println("MOVES: " + moves + ", CURRENT LOCATION: (" + playX + ", " + playY + ")");
-            System.out.println("Bring DESMOND to safety!");
             grid = SD.fillArr(playX, playY, found, zombies);
-            SD.printArr(grid);
+            SD.printArr(grid, menu);
 
             for(int i = 0; i < NUMZOMBIES; i++){
                 do{
@@ -115,16 +151,26 @@ public class SaveDesmond {
 
             do{
                 command = SD.inpString("Enter a command");
-                SD.readCommand(command);
+                SD.readCommand(command, moves);
             }while(!validCommand);
+
+            for(int i = 0; i < NUMZOMBIES; i++){
+                if((playX == zombies[i][0]) && (playY == zombies[i][1])){
+                    System.out.println("You died!");
+                    grid = SD.fillArr(playX, playY, found, zombies);
+                    SD.printArr(grid, menu);
+                    SD.endGame(false, moves);
+                }
+            }
 
             if((playX == 0) && (playY == 0)){
                 System.out.println("You saved DESMOND!");
                 won = true;
                 grid = SD.fillArr(playX, playY, found, zombies);
-                SD.printArr(grid);
+                SD.printArr(grid, menu);
 
             }
+            
         }
 
         SD.endGame(true, moves);
@@ -140,12 +186,12 @@ public class SaveDesmond {
                 if((i == playY) && (j == playX)){
                     grid[i][j] = "["+player+"]";
                 }else if((i == desY) && (j == desX) && (!found)){
-                    grid[i][j] = "["+DESMOND+"]";
+                    grid[i][j] = "["+desmond+"]";
                 }
 
                 for(int k = 0; k < zombies.length; k++){
                     if((i == zombies[k][1]) && (j == zombies[k][0])){
-                        grid[i][j] = "["+ZOMBIE+"]";
+                        grid[i][j] = "["+zombie+"]";
                     }
                 }
 
@@ -155,7 +201,7 @@ public class SaveDesmond {
         return grid;
     }
 
-    public void printArr(String[][]grid){
+    public void printArr(String[][]grid, String [] menu){
 
         System.out.println(LETTERCORDS);
 
@@ -164,7 +210,7 @@ public class SaveDesmond {
             for(int j = 0; j < grid[i].length; j++)
                 System.out.print(grid[i][j]);
 
-            System.out.print(" " + i);
+            System.out.print(" " + i + "\t" + menu[i]);
             System.out.println();
         }
 
@@ -180,7 +226,7 @@ public class SaveDesmond {
         return input;
     }
 
-    public void readCommand(String command){
+    public void readCommand(String command, int moves) throws IOException{
         if(command.equalsIgnoreCase("S")){
             if(playY != COL-1){
                 playY++;
@@ -220,6 +266,20 @@ public class SaveDesmond {
                 validCommand = false;
                 System.out.println("You can't go out of bounds!");
             }
+        }
+
+        if(command.equalsIgnoreCase("cheat")){
+            System.out.println("Desmond's current location is (" + desX + ", " + desY + ")");
+        }
+
+        if(command.equalsIgnoreCase("win")){
+            System.out.println("You saved Desmond!");
+            SD.endGame(true, moves);
+        }
+
+        if(command.equalsIgnoreCase("quit")){
+            System.out.println("You lost!");
+            SD.endGame(false, moves);
         }
 
     }
