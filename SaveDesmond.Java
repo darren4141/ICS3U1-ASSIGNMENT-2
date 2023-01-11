@@ -226,6 +226,7 @@ public class SaveDesmond {
         return input;
     }
 
+
     public void readCommand(String command, int moves) throws IOException{
         if(command.equalsIgnoreCase("S")){
             if(playY != COL-1){

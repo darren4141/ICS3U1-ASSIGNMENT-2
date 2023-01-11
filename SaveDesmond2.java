@@ -15,7 +15,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     Button start, up, down, left, right;
     
 	public void init(){
-		resize(1500, 5000);
+		resize(500, 750);
 		
 		start = new Button("Start");
 		start.addActionListener(this);
