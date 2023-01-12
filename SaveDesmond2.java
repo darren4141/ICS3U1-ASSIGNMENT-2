@@ -35,6 +35,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
 
     Button start, up, down, left, right;
+    Button win, cheat, giveUp;
     TextField nameInput;
    
     public void init(){
@@ -63,6 +64,18 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         right = new Button(">");
         right.addActionListener(this);
         right.setBounds(padX+30, padY, 30, 30);
+        
+        win = new Button("WIN");
+        win.addActionListener(this);
+        win.setBounds(padX + 100, padY, 100, 30);
+        
+        cheat = new Button("CHEAT");
+        cheat.addActionListener(this);
+        cheat.setBounds(padX + 210, padY, 100, 30);
+        
+        giveUp = new Button("GIVE UP");
+        giveUp.addActionListener(this);
+        giveUp.setBounds(padX + 320, padY, 100, 30);
         
         
     }
@@ -104,7 +117,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         
         sortHighscores();
         for(int i = 0; i < highscores.size(); i++){
-            g.drawString(highestNames.get(i) + "   " + highscores.get(i), menuX + 500, menuY+((i+1)*20));
+            g.drawString(highestNames.get(i), menuX + 500, menuY+((i+1)*20));
+            g.drawString(highscores.get(i) + " ", menuX + 600, menuY+((i+1)*20));
 
         }
        
@@ -123,32 +137,40 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             startPressed();
         }
        
-        if(e.getSource()== up){
+        if(e.getSource() == up){
             if(playY != 0){
             	moves++;
                 playY--;
             }
         }
        
-        if(e.getSource()== down){
+        if(e.getSource() == down){
             if(playY != 10){
             	moves++;
                 playY++;
             }
         }
        
-        if(e.getSource()== left){
+        if(e.getSource() == left){
             if(playX != 0){
             	moves++;
                 playX--;
             }
         }
        
-        if(e.getSource()== right){
+        if(e.getSource() == right){
             if(playX != 10){
             	moves++;
                 playX++;
             }
+        }
+        
+        if(e.getSource() == win){
+    		endGame(true);
+        }
+        
+        if(e.getSource() == giveUp){
+    		endGame(false);
         }
         
     	if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){
@@ -329,11 +351,17 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(down);
         add(left);
         add(right);
-
+        add(win);
+        add(cheat);
+        add(giveUp);
+        
         up.setVisible(true);
         down.setVisible(true);
         left.setVisible(true);
         right.setVisible(true);
+        win.setVisible(true);
+        cheat.setVisible(true);
+        giveUp.setVisible(true);
 
     }
     
@@ -351,6 +379,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         down.setVisible(false);
         left.setVisible(false);
         right.setVisible(false);
+        win.setVisible(false);
+        cheat.setVisible(false);
+        giveUp.setVisible(false);
 
     }
    
