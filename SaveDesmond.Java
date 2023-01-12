@@ -22,7 +22,7 @@ public class SaveDesmond {
  
  
     public static void main(String[]args) throws IOException{
-    	player = "O";
+        player = "O";
         playX = 0;
         playY = 0;
         int moves = 0;
@@ -33,7 +33,8 @@ public class SaveDesmond {
         for(int i = 0; i < COL; i++) menu[i] = "";
         menu[0] = "MENU:";
         menu[2] = "Past moves: ";
-        menu[6] = "Cheat codes: <CHEAT> <QUIT> <WIN>";
+        menu[6] = "Desmond location: (" + desX + ", " + desY + ")";
+        menu[7] = "Cheat codes: <CHEAT> <QUIT> <WIN>";
         String [][] grid;
         LinkedList<String> searched = new LinkedList<String>();
  
@@ -49,16 +50,16 @@ public class SaveDesmond {
         }
  
         System.out.println("\n\n<SAVE DESMOND>");
-        
+       
         SD.sortHighscores();
-        
+       
         System.out.println("HIGHSCORES: ");
         System.out.println(".----------------------------.");
         for(int i = 0; i < highscores.size(); i++){
-        	System.out.printf("|%-20s |%-5s |%n", highscoreNames.get(i), highscores.get(i));
+            System.out.printf("|%-20s |%-5s |%n", highscoreNames.get(i), highscores.get(i));
         }
         System.out.println("'----------------------------'");
-
+ 
         System.out.println("|Welcome! In this game you <O> will save Desmond <D>");
         System.out.println("|Make sure you don't hit any zombies <Z>");
         System.out.println("|Desmond and the zombies will move randomly in one direction each turn");
@@ -85,6 +86,7 @@ public class SaveDesmond {
         name = SD.inpString("What is your name?");
  
         while(!found){
+        	
             searched.add("(" + playX + ", " + playY + ")");
             if((Math.abs(desX-playX) + Math.abs(desY-playY) <= 2)){
                 menu[1] = "Distance from Desmond: Very hot!";
@@ -97,7 +99,8 @@ public class SaveDesmond {
             moves++;
             menu[3] = "MOVES: " + moves;
             menu[4] = "CURRENT LOCATION: (" + playX + ", " + playY + ")";
- 
+            menu[6] = "Desmond location: (" + desX + ", " + desY + ")";
+
             if(moves <= 5){
                 menu[2] += searched.get(moves-1) + " ";
             }else{
@@ -121,20 +124,31 @@ public class SaveDesmond {
  
             for(int i = 0; i < NUMZOMBIES; i++){
                 do{
-                    SD.zombWalk(grid, "[D]", i);
+                    SD.zombWalk(grid, i);
                 }while(!validCommand);
             }
- 
+            
+            System.out.println("\nZOMBIES WALKED");
+
+            grid = SD.fillArr(playX, playY, found, zombies);
+            
             do{
-                SD.desWalk(grid, "[Z]");
- 
+                SD.desWalk(grid, "["+zombie+"]");
             }while(!validCommand);
- 
+            
+            System.out.println("\nDESMOND WALKED");
+
+            menu[6] = "Desmond location: (" + desX + ", " + desY + ")";
+            grid = SD.fillArr(playX, playY, found, zombies);
+
+            
             do{
                 command = SD.inpString("Enter a command");
                 SD.readCommand(command, moves);
             }while(!validCommand);
  
+            System.out.println("\nPLAYER WALKED");
+
             for(int i = 0; i < NUMZOMBIES; i++){
                 if((playX == zombies[i][0]) && (playY == zombies[i][1])){
                     System.out.println("You died!");
@@ -154,14 +168,14 @@ public class SaveDesmond {
         player = "@";
  
         while(!won){
-        	menu[1] = "You found Desmond!";
+            menu[1] = "You found Desmond!";
             moves++;
             grid = SD.fillArr(playX, playY, found, zombies);
             SD.printArr(grid, menu);
  
             for(int i = 0; i < NUMZOMBIES; i++){
                 do{
-                    SD.zombWalk(grid, "[D]", i);
+                    SD.zombWalk(grid, i);
                 }while(!validCommand);
             }
  
@@ -235,23 +249,23 @@ public class SaveDesmond {
     public int readInt(String msg, int min, int max) throws IOException{
         System.out.println(msg);
         int input;
-        
+       
         while(true){
-        	try{
+            try{
                 input = Integer.parseInt(br.readLine());
                 if(input >= min && input <= max){
-                	break;
+                    break;
                 }else{
-                	System.out.println("Enter a number beteween [" + min + ", "+ max +"]");
+                    System.out.println("Enter a number beteween [" + min + ", "+ max +"]");
                 }
-        	}catch(NumberFormatException e){
-        		System.out.println("Enter a number!");
-        		System.out.println(e.getMessage());
-        	}
+            }catch(NumberFormatException e){
+                System.out.println("Enter a number!");
+                System.out.println(e.getMessage());
+            }
         }
         return input;
     }
-    
+   
     public String inpString(String msg) throws IOException{
         System.out.println(msg);
         String input;
@@ -363,37 +377,54 @@ public class SaveDesmond {
        
     }
  
-    public void zombWalk(String[][]grid, String avoid, int zombnum){
+    public void zombWalk(String[][]grid, int zombnum){
         int direction = SD.roll(1, 4);
         switch(direction){
             case 1:
-                if(zombies[zombnum][1] != COL-1 && !grid[zombies[zombnum][0]][zombies[zombnum][1]+1].equals(avoid)){
-                    zombies[zombnum][1]++;
-                    validCommand = true;
+                if(zombies[zombnum][1] != COL-1){// && !grid[zombies[zombnum][0]][zombies[zombnum][1]+1].equals(avoid)
+                	if(zombies[zombnum][0] != desX && zombies[zombnum][1]+1 != desY){
+                        zombies[zombnum][1]++;
+                        validCommand = true;
+                	}else{
+                		validCommand = false;
+                	}
+
                 }else{
                     validCommand = false;
                 }
                 break;
             case 2:
-                if(zombies[zombnum][1] != 0 && !grid[zombies[zombnum][0]][zombies[zombnum][1]-1].equals(avoid)){
-                    zombies[zombnum][1]--;
-                    validCommand = true;
+                if(zombies[zombnum][1] != 0){// && !grid[zombies[zombnum][0]][zombies[zombnum][1]-1].equals(avoid)
+                	if(zombies[zombnum][0] != desX && zombies[zombnum][1]-1 != desY){
+                        zombies[zombnum][1]--;
+                        validCommand = true;
+                	}else{
+                		validCommand = false;
+                	}
                 }else{
                     validCommand = false;
                 }
                 break;
             case 3:
-                if(zombies[zombnum][0] != ROW-1 && !grid[zombies[zombnum][0]+1][zombies[zombnum][1]].equals(avoid)){
-                    zombies[zombnum][0]++;
-                    validCommand = true;
+                if(zombies[zombnum][0] != ROW-1){// && !grid[zombies[zombnum][0]+1][zombies[zombnum][1]].equals(avoid)
+                	if(zombies[zombnum][0]+1 != desX && zombies[zombnum][1] != desY){
+                        zombies[zombnum][0]++;
+                        validCommand = true;
+                	}else{
+                		validCommand = false;
+                	}
                 }else{
                     validCommand = false;
                 }
                 break;
             case 4:
-                if(zombies[zombnum][0] != 0 && !grid[zombies[zombnum][0]-1][zombies[zombnum][1]].equals(avoid)){
-                    zombies[zombnum][0]--;
-                    validCommand = true;
+                if(zombies[zombnum][0] != 0){// && !grid[zombies[zombnum][0]-1][zombies[zombnum][1]].equals(avoid)
+                	if(zombies[zombnum][0]-1 != desX && zombies[zombnum][1] != desY){
+                        zombies[zombnum][0]--;
+                        validCommand = true;
+                	}else{
+                		validCommand = false;
+                	}
                 }else{
                     validCommand = false;
                 }
@@ -404,34 +435,34 @@ public class SaveDesmond {
     }
  
     public void sortHighscores(){
-    	int tempScore;
-    	String tempName;
-    	boolean sorted = false;
-    	while(!sorted){
-    		sorted = true;
-        	for(int i = 0; i < highscores.size()-1; i++){
-        		if(highscores.get(i) > highscores.get(i+1)){
-        			sorted = false;
-        			tempScore = highscores.get(i);
-        			tempName = highscoreNames.get(i);
-        			
-        			highscores.set(i, highscores.get(i+1));
-        			highscoreNames.set(i, highscoreNames.get(i+1));
-        			
-        			highscores.set(i+1, tempScore);
-        			highscoreNames.set(i+1, tempName);
-        			
-        		}
-        	}    		
-    	}
+        int tempScore;
+        String tempName;
+        boolean sorted = false;
+        while(!sorted){
+            sorted = true;
+            for(int i = 0; i < highscores.size()-1; i++){
+                if(highscores.get(i) > highscores.get(i+1)){
+                    sorted = false;
+                    tempScore = highscores.get(i);
+                    tempName = highscoreNames.get(i);
+                   
+                    highscores.set(i, highscores.get(i+1));
+                    highscoreNames.set(i, highscoreNames.get(i+1));
+                   
+                    highscores.set(i+1, tempScore);
+                    highscoreNames.set(i+1, tempName);
+                   
+                }
+            }          
+        }
     }
-    
+   
     public void endGame(boolean won, int moves) throws IOException{
         if(won){
             System.out.println("You won! You took " + moves + " steps!");
             highscoreNames.add(name);
             highscores.add(moves);
-            
+           
         }if(!won){
             System.out.println("Better luck next time.");
         }
@@ -439,3 +470,10 @@ public class SaveDesmond {
     }
  
 }
+
+
+
+
+
+
+
