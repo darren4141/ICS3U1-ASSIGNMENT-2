@@ -424,8 +424,6 @@ public class SaveDesmond {
         		}
         	}    		
     	}
-
-    	
     }
     
     public void endGame(boolean won, int moves) throws IOException{
