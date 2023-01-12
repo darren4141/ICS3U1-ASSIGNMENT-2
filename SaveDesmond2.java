@@ -1,6 +1,7 @@
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.LinkedList;
  
 public class SaveDesmond2 extends Applet implements ActionListener{
     static final int ROW = 11;
@@ -27,16 +28,24 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int menuX = 350, menuY = 20;
     
     static int moves;
+    static String name = "someone";
     static String distanceMessage;
     static String objectiveMessage = "FIND DESMOND";
-   
+    static LinkedList<String> highestNames = new LinkedList<String>();
+    static LinkedList<Integer> highscores = new LinkedList<Integer>();
+
     Button start, up, down, left, right;
+    TextField nameInput;
    
     public void init(){
         resize(1500, 750);
        
         start = new Button("Start");
         start.addActionListener(this);
+        nameInput = new TextField();
+        nameInput.addActionListener(this);
+        nameInput.setBounds(50, 100, 200, 30);
+        add(nameInput);
         add(start);
        
         up = new Button("^");
@@ -54,6 +63,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         right = new Button(">");
         right.addActionListener(this);
         right.setBounds(padX+30, padY, 30, 30);
+        
         
     }
     
@@ -85,14 +95,29 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
         
         g.setColor(black);
+        g.drawString(name + "'s GAME", 10, 350);
         g.drawString(objectiveMessage, menuX, menuY);
         g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
         g.drawString("MOVES: " + moves, menuX, menuY+40);
+        g.drawString("HIGHSCORES:", menuX + 500, menuY);
         
+        
+        sortHighscores();
+        for(int i = 0; i < highscores.size(); i++){
+            g.drawString(highestNames.get(i) + "   " + highscores.get(i), menuX + 500, menuY+((i+1)*20));
+
+        }
        
     }
    
     public void actionPerformed(ActionEvent e){
+    	
+    	
+    	for(int i = 0; i < ROW; i++){
+    		for(int j = 0; j < COL; j++){
+    			gridStatus[i][j] = 0;
+    		}
+    	}
     	
         if(e.getSource() == start){
             startPressed();
@@ -139,6 +164,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         	followStatus = true;
         }
         
+        if(gridStatus[desX][desY] == 2){
+        	objectiveMessage = "YOU DIED, PRESS START TO PLAY AGAIN";
+    		endGame(false);
+        }
+        
     	int distance = Math.abs(desX-playX) + Math.abs(desY-playY);
     	
     	if(distance == 0){
@@ -152,7 +182,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
     	
     	if(followStatus && playX == 0 && playY == 0){
-    		objectiveMessage = "YOU WON IN " + moves + " MOVES";
+    		objectiveMessage = "YOU WON IN " + moves + " MOVES, PRESS START TO PLAY AGAIN";
+    		endGame(true);
     	}
     	
         repaint();
@@ -226,7 +257,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	        int direction = roll(1, 6);
 	        switch(direction){
 	            case 1:
-	                if(zombies[zombnum][1] != COL-1 && gridStatus[zombies[zombnum][0]][zombies[zombnum][1]+1] != 1){
+	                if(zombies[zombnum][1] != COL-1 && gridStatus[zombies[zombnum][0]][zombies[zombnum][1]+1] == 0){
 	                    zombies[zombnum][1]++;
 	                    validCommand = true;
 	                }else{
@@ -234,7 +265,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	                }
 	                break;
 	            case 2:
-	                if(zombies[zombnum][1] != 0 && gridStatus[zombies[zombnum][0]][zombies[zombnum][1]-1] != 1){
+	                if(zombies[zombnum][1] >= 1 && gridStatus[zombies[zombnum][0]][zombies[zombnum][1]-1] == 0){
 	                    zombies[zombnum][1]--;
 	                    validCommand = true;
 	                }else{
@@ -242,7 +273,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	                }
 	                break;
 	            case 3:
-	                if(zombies[zombnum][0] != ROW-1 && gridStatus[zombies[zombnum][0]+1][zombies[zombnum][1]] != 1){
+	                if(zombies[zombnum][0] != ROW-1 && gridStatus[zombies[zombnum][0]+1][zombies[zombnum][1]] == 0){
 	                    zombies[zombnum][0]++;
 	                    validCommand = true;
 	                }else{
@@ -250,7 +281,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	                }
 	                break;
 	            case 4:
-	                if(zombies[zombnum][0] != 0 && gridStatus[zombies[zombnum][0]-1][zombies[zombnum][1]] != 1){
+	                if(zombies[zombnum][0] >= 1 && gridStatus[zombies[zombnum][0]-1][zombies[zombnum][1]] == 0){
 	                    zombies[zombnum][0]--;
 	                    validCommand = true;
 	                }else{
@@ -267,20 +298,29 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	                validCommand = false;
 	        }
     	}while(!validCommand);
+        gridStatus[zombies[zombnum][0]][zombies[zombnum][1]] = 2;
+
     }
     
     public void startPressed(){
+    	name = nameInput.getText();
+    	nameInput.setText("");
+    	nameInput.setVisible(false);
+    	start.setVisible(false);
+
+    	playX = 0;
+    	playY = 0;
+    	moves = 0;
+        followStatus = false;
+
+    	desX = roll(7, 9);
+    	desY = roll(7, 9);
+    	
         gridStatus[desX][desY] = 1;
-        
-    	for(int i = 0; i < ROW; i++){
-    		for(int j = 0; j < COL; j++){
-    			gridStatus[i][j] = 0;
-    		}
-    	}
     	
         for(int i = 0; i < zombies.length; i++){
-            zombies[i][0] = roll(1,6);
-            zombies[i][1] = roll(1,6);
+            zombies[i][0] = roll(2,6);
+            zombies[i][1] = roll(2,6);
             
             gridStatus[zombies[i][0]][zombies[i][1]] = 2;
         }
@@ -289,8 +329,54 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(down);
         add(left);
         add(right);
+
+        up.setVisible(true);
+        down.setVisible(true);
+        left.setVisible(true);
+        right.setVisible(true);
+
+    }
+    
+    
+    
+    public void endGame(boolean won){
+    	if(won){
+    		highestNames.add(name);
+    		highscores.add(moves);
+    	}
+    	
+    	nameInput.setVisible(true);
+    	start.setVisible(true);
+        up.setVisible(false);
+        down.setVisible(false);
+        left.setVisible(false);
+        right.setVisible(false);
+
     }
    
+    public void sortHighscores(){
+    	int tempScore;
+    	String tempName;
+    	boolean sorted = false;
+    	while(!sorted){
+    		sorted = true;
+        	for(int i = 0; i < highscores.size()-1; i++){
+        		if(highscores.get(i) > highscores.get(i+1)){
+        			sorted = false;
+        			tempScore = highscores.get(i);
+        			tempName = highestNames.get(i);
+        			
+        			highscores.set(i, highscores.get(i+1));
+        			highestNames.set(i, highestNames.get(i+1));
+        			
+        			highscores.set(i+1, tempScore);
+        			highestNames.set(i+1, tempName);
+        			
+        		}
+        	}    		
+    	}
+    }
+    
 }
  
 
