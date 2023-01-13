@@ -111,19 +111,20 @@ public class SaveDesmond {
  
             }
  
-           
             menu[5] = "Zombie locations: ";
  
+            for(int i = 0; i < zombies.length; i++){
+                menu[5] += "(" + zombies[i][0] + ", " + zombies[i][1] + ")";
+            }
+
+            System.out.println("\nFind DESMOND!");
+            grid = SD.fillArr(desX, desY, playX, playY, found, zombies);
+            SD.printArr(grid, menu);
+
             do{
                 command = SD.inpString("Enter a command");
                 SD.readCommand(command, moves);
             }while(!validCommand);
-
-            for(int i = 0; i < zombies.length; i++){
-                menu[5] += "(" + zombies[i][0] + ", " + zombies[i][1] + ")";
-            }
- 
-            grid = SD.fillArr(desX, desY, playX, playY, found, zombies);
  
             do{
                 SD.desWalk(grid, "["+zombie+"]");
@@ -137,9 +138,7 @@ public class SaveDesmond {
 
             menu[6] = "Desmond location: (" + desX + ", " + desY + ")";
             
-            System.out.println("\nFind DESMOND!");
             grid = SD.fillArr(desX, desY, playX, playY, found, zombies);
-            SD.printArr(grid, menu);
 
             for(int i = 0; i < NUMZOMBIES; i++){
                 if((playX == zombies[i][0]) && (playY == zombies[i][1])){
@@ -207,15 +206,15 @@ public class SaveDesmond {
                 if((i == playY) && (j == playX)){
                     grid[i][j] = "["+player+"]";
                 } 
-                
-                if((i == desY) && (j == desX) && (!found)){
-                    grid[i][j] = "["+desmond+"]";
-                }
  
                 for(int k = 0; k < zombies.length; k++){
                     if((i == zombies[k][1]) && (j == zombies[k][0])){
                         grid[i][j] = "["+zombie+"]";
                     }
+                }
+
+                if((i == desY) && (j == desX) && (!found)){
+                    grid[i][j] = "["+desmond+"]";
                 }
  
             }
@@ -379,17 +378,14 @@ public class SaveDesmond {
                     zombies[zombnum][1]++;
                 	if(zombies[zombnum][0] == desX && zombies[zombnum][1] == desY){
                         zombies[zombnum][1]--;
-                        //System.out.println(" Zombie after: " + zombies[zombnum][0] + ", " + zombies[zombnum][1]+1);
                 	}
                 }
-                System.out.println("Desmond: "+desX + ", " + desY + " Zombie before: " + zombies[zombnum][0] + ", " + zombies[zombnum][1]);
                 break;
             case 2:
                 if(zombies[zombnum][1] != 0){// && !grid[zombies[zombnum][0]][zombies[zombnum][1]-1].equals(avoid)
                     zombies[zombnum][1]--;
                 	if(zombies[zombnum][0] == desX && zombies[zombnum][1] == desY){
                         zombies[zombnum][1]++;
-                        //System.out.println(" Zombie after: " + zombies[zombnum][0] + ", " + zombies[zombnum][1]-1);
                 	}
                 }
                 System.out.println("Desmond: "+desX + ", " + desY + " Zombie before: " + zombies[zombnum][0] + ", " + zombies[zombnum][1]);
@@ -399,20 +395,16 @@ public class SaveDesmond {
                     zombies[zombnum][0]++;
                 	if(zombies[zombnum][0] == desX && zombies[zombnum][1] == desY){
                         zombies[zombnum][0]--;
-                        //System.out.println(" Zombie after: " + zombies[zombnum][0]+1 + ", " + zombies[zombnum][1]);
                 	}
                 }
-                System.out.println("Desmond: "+desX + ", " + desY + " Zombie before: " + zombies[zombnum][0] + ", " + zombies[zombnum][1]);
                 break;
             case 4:
                 if(zombies[zombnum][0] != 0){// && !grid[zombies[zombnum][0]-1][zombies[zombnum][1]].equals(avoid)
                     zombies[zombnum][0]--;
                 	if(zombies[zombnum][0] == desX && zombies[zombnum][1] == desY){
                         zombies[zombnum][0]++;
-                        //System.out.println(" Zombie after: " + zombies[zombnum][0]-1 + ", " + zombies[zombnum][1]);
                 	}
                 }
-                System.out.println("Desmond: "+desX + ", " + desY + " Zombie before: " + zombies[zombnum][0] + ", " + zombies[zombnum][1]);
                 break;
             default:
                 validCommand = false;
