@@ -15,6 +15,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     static boolean colourSwap = true;
     static boolean followStatus = false;
+    static boolean desVisible;
+    static boolean zombVisible;
     static int playX = 0;
     static int playY = 0;
     static int desX = roll(7, 9), desY = roll(7, 9);
@@ -31,10 +33,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static String name = "someone";
     static String distanceMessage;
     static String objectiveMessage = "FIND DESMOND";
+    static String cheatMessage = "";
     static LinkedList<String> highestNames = new LinkedList<String>();
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
  
     Button start, up, down, left, right;
+    Button easy, medium, hard;
     Button win, cheat, giveUp;
     TextField nameInput;
    
@@ -49,6 +53,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(nameInput);
         add(start);
        
+        easy = new Button("Easy");
+        easy.addActionListener(this);
+        medium = new Button("Medium");
+        medium.addActionListener(this);
+        hard = new Button("Hard");
+        hard.addActionListener(this);
+        easy.setBounds(padX + 100, padY-40, 100, 30);
+        medium.setBounds(padX + 210, padY-40, 100, 30);
+        hard.setBounds(padX + 320, padY-40, 100, 30);
+
         up = new Button("^");
         up.addActionListener(this);
         up.setBounds(padX, padY-30, 30, 30);
@@ -97,15 +111,19 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.setColor(red);
         g.fillOval((30*playX)+5,(30*playY)+5,20,20);
        
-        g.setColor(skyBlue);
-        g.fillOval((30*desX)+8,(30*desY)+8,14,14);
- 
-        g.setColor(lightGreen);
-       
-        for(int i = 0; i < ZOMBNUM; i++){
-            g.fillOval((30*zombies[i][0])+3,(30*zombies[i][1])+3,24,24);
- 
+        if(desVisible) {
+            g.setColor(skyBlue);
+            g.fillOval((30*desX)+8,(30*desY)+8,14,14);        	
         }
+ 
+        
+        if(zombVisible) {
+            g.setColor(lightGreen);
+            for(int i = 0; i < ZOMBNUM; i++){
+                g.fillOval((30*zombies[i][0])+3,(30*zombies[i][1])+3,24,24);
+            }        	
+        }
+
 
     	g.setColor(red);
         for(int i = 0; i < ROW; i++){
@@ -119,6 +137,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.drawString(objectiveMessage, menuX, menuY);
         g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
         g.drawString("MOVES: " + moves, menuX, menuY+40);
+        g.drawString(cheatMessage, menuX, menuY+60);
         g.drawString("HIGHSCORES:", menuX + 500, menuY);
        
        
@@ -180,6 +199,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             endGame(false);
         }
        
+        if(e.getSource() == cheat) {
+        	cheatMessage = "Desmond's current location: [" + desX + ", " + desY + "]";
+        }
+        
         if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){
             desWalk(followStatus);
             for(int i = 0; i < ZOMBNUM; i++){
@@ -187,14 +210,30 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }
             
         }
+        
+        if(e.getSource() == easy) {
+        	desVisible = true;
+        	zombVisible = true;
+        }
        
+        if(e.getSource() == medium) {
+        	desVisible = false;
+        	zombVisible = true;
+        }
+        
+        if(e.getSource() == hard) {
+        	desVisible = false;
+        	zombVisible = false;
+        }
+        
         if(desX == playX && desY == playY){
+        	desVisible = true;
             objectiveMessage = "RETURN DESMOND TO HOME (0, 0)";
             followStatus = true;
         }
        
         if(gridStatus[playX][playY] == 2){
-            objectiveMessage = "YOU DIED, PRESS START TO PLAY AGAIN";
+            objectiveMessage = "A ZOMBIE ATE YOU! YOU DIED, PRESS START TO PLAY AGAIN";
             endGame(false);
         }
        
@@ -241,7 +280,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     }
                     break;
                 case 2:
-                    if(desY != 0 && gridStatus[desX][desY-1] != 2){
+                    if(desY > 0 && gridStatus[desX][desY-1] != 2){
                         desY--;
                         validCommand = true;
                     }else{
@@ -257,7 +296,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     }
                     break;
                 case 4:
-                    if(desX != 0 && gridStatus[desX-1][desY] != 2){
+                    if(desX > 0 && gridStatus[desX-1][desY] != 2){
                         desX--;
                         validCommand = true;
                     }else{
@@ -360,7 +399,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(win);
         add(cheat);
         add(giveUp);
-       
+        add(easy);
+        add(medium);
+        add(hard);
+        
         up.setVisible(true);
         down.setVisible(true);
         left.setVisible(true);
@@ -368,6 +410,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         win.setVisible(true);
         cheat.setVisible(true);
         giveUp.setVisible(true);
+        easy.setVisible(true);
+        medium.setVisible(true);
+        hard.setVisible(true);
  
     }
    
@@ -388,7 +433,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         win.setVisible(false);
         cheat.setVisible(false);
         giveUp.setVisible(false);
- 
+        easy.setVisible(false);
+        medium.setVisible(false);
+        hard.setVisible(false);
     }
    
     public void sortHighscores(){
