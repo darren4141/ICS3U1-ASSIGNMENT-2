@@ -330,7 +330,7 @@ public class SaveDesmond {
     }
  
     public void desWalk(String[][]grid, String avoid){
-        int direction = SD.roll(1, 4);
+        int direction = SD.roll(1, 6);
         switch(direction){
             case 1:
                 if(desY != COL-1 && !grid[desX][desY+1].equals(avoid)){
@@ -364,6 +364,12 @@ public class SaveDesmond {
                     validCommand = false;
                 }
                 break;
+            case 5:
+                validCommand = true;
+                break;
+            case 6:
+                validCommand = true;
+                break;
             default:
                 validCommand = false;
         }
@@ -371,7 +377,7 @@ public class SaveDesmond {
     }
  
     public void zombWalk(String[][]grid, int zombnum){
-        int direction = SD.roll(1, 4);
+        int direction = SD.roll(1, 6);
         switch(direction){
             case 1:
                 if(zombies[zombnum][1] != COL-1){// && !grid[zombies[zombnum][0]][zombies[zombnum][1]+1].equals(avoid)
@@ -406,6 +412,12 @@ public class SaveDesmond {
                 	}
                 }
                 break;
+            case 5:
+                validCommand = true;
+                break;
+            case 6:
+                validCommand = true;
+                break;    
             default:
                 validCommand = false;
         }
