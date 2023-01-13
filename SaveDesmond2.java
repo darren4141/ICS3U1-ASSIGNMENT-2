@@ -106,7 +106,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.fillOval((30*zombies[i][0])+3,(30*zombies[i][1])+3,24,24);
  
         }
-       
+
+    	g.setColor(red);
+        for(int i = 0; i < ROW; i++){
+            for(int j = 0; j < COL; j++){
+                g.drawString(Integer.toString(gridStatus[j][i]), 30*j,(30*i)+30);
+            }
+        }
+        
         g.setColor(black);
         g.drawString(name + "'s GAME", 10, 350);
         g.drawString(objectiveMessage, menuX, menuY);
@@ -125,8 +132,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
     public void actionPerformed(ActionEvent e){
-       
-       
+        repaint();
+
         for(int i = 0; i < ROW; i++){
             for(int j = 0; j < COL; j++){
                 gridStatus[i][j] = 0;
@@ -177,8 +184,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             desWalk(followStatus);
             for(int i = 0; i < ZOMBNUM; i++){
                 zombWalk(i);
- 
             }
+            
         }
        
         if(desX == playX && desY == playY){
@@ -186,7 +193,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             followStatus = true;
         }
        
-        if(gridStatus[desX][desY] == 2){
+        if(gridStatus[playX][playY] == 2){
             objectiveMessage = "YOU DIED, PRESS START TO PLAY AGAIN";
             endGame(false);
         }
@@ -208,7 +215,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             endGame(true);
         }
        
-        repaint();
     }
  
     public static int roll(int min, int max){
