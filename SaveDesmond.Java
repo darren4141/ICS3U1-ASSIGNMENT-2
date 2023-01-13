@@ -14,12 +14,12 @@ public class SaveDesmond {
     static int desX;
     static int desY;
     static int [][] zombies = new int [5][2];
+
     static boolean validCommand;
     static LinkedList<String> highscoreNames = new LinkedList<String>();
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static SaveDesmond SD = new SaveDesmond();
- 
  
     public static void main(String[]args) throws IOException{
         player = "O";
@@ -108,7 +108,6 @@ public class SaveDesmond {
                 for(int i = moves-6; i < moves; i++){
                     menu[2] += searched.get(i) + " ";
                 }
- 
             }
  
             menu[5] = "Zombie locations: ";
@@ -147,7 +146,6 @@ public class SaveDesmond {
                     SD.printArr(grid, menu);
                     SD.endGame(false, moves);
                 }
- 
             }
  
             if((desX == playX) && (desY == playY)){
@@ -189,9 +187,7 @@ public class SaveDesmond {
                 won = true;
                 grid = SD.fillArr(desX, desY, playX, playY, found, zombies);
                 SD.printArr(grid, menu);
- 
             }
-           
         }
  
         SD.endGame(true, moves);
@@ -225,18 +221,15 @@ public class SaveDesmond {
     public void printArr(String[][]grid, String [] menu){
  
         System.out.println(LETTERCORDS);
- 
+
         for(int i = 0; i < grid.length; i++){
             System.out.print(i + " ");
             for(int j = 0; j < grid[i].length; j++)
                 System.out.print(grid[i][j]);
- 
             System.out.print(" " + i + "\t" + menu[i]);
             System.out.println();
         }
- 
         System.out.println(LETTERCORDS);
- 
     }
  
     public int readInt(String msg, int min, int max) throws IOException{
@@ -440,7 +433,6 @@ public class SaveDesmond {
                    
                     highscores.set(i+1, tempScore);
                     highscoreNames.set(i+1, tempName);
-                   
                 }
             }          
         }
