@@ -36,7 +36,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int menuX = 350+boardX, menuY = 20+boardY;
    
     static int moves;
-    static String name = "someone";
+    static String name = "SOMEONE";
     static String distanceMessage;
     static String objectiveMessage = "FIND DESMOND";
     static String cheatMessage = "";
@@ -143,14 +143,20 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
 
 
-    	g.setColor(red);
-        for(int i = 0; i < ROW; i++){
-            for(int j = 0; j < COL; j++){
-                g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
-            }
-        }
+//    	g.setColor(red);
+//        for(int i = 0; i < ROW; i++){
+//            for(int j = 0; j < COL; j++){
+//                g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
+//            }
+//        }
         
         g.setColor(black);
+        
+        for(int i = 1; i < ROW+1; i++) {
+            g.drawString(Integer.toString(i), (30*(i))+boardX-20, boardY-5);
+            g.drawString(Integer.toString(i), boardX-20, (30*(i))+boardY-20);
+        }
+        
         g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+15);
         g.drawString(objectiveMessage, menuX, menuY);
         g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
@@ -400,6 +406,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     public void startPressed(){
         name = nameInput.getText();
+        name = name.toUpperCase();
         nameInput.setText("");
         nameInput.setVisible(false);
         start.setVisible(false);
