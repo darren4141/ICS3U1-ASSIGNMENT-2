@@ -14,7 +14,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Color lightGreen = new Color(122, 230, 76);
     static Color grey = new Color(211,211,211);
     static Color lightGrey = new Color(220,220,220);
-    
+   
     static boolean colourSwap = true;
     static boolean followStatus = false;
     static boolean desVisible;
@@ -51,8 +51,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     public void init(){
         resize(1500, 750);
         setBackground(grey);
-        
-        
+       
+       
         start = new Button("Start");
         start.addActionListener(this);
         nameInput = new TextField();
@@ -70,7 +70,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         easy.setBounds(padX + 100, padY-40, 100, 30);
         medium.setBounds(padX + 210, padY-40, 100, 30);
         hard.setBounds(padX + 320, padY-40, 100, 30);
-
+ 
         up = new Button("^");
         up.addActionListener(this);
         up.setBounds(padX, padY-30, 30, 30);
@@ -103,18 +103,22 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
     public void paint(Graphics g){
-    	
+       
         g.setColor(lightGrey);
         g.fillRect(menuX, menuY + legendY, 150, 90);
         g.fillRect(menuX + highscoreX-5, menuY-15, 220, 20*(highscores.size()+1));
         g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);
-        
+        g.fillRect(boardX, (30*(COL+1))+21, (10*ROW), 20);
+       
         g.setColor(black);
         g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
         g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);
         g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
         g.drawRect(menuX + highscoreX-6, menuY-16, 221, 20*(highscores.size()+1)+1);
-
+        g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
+        g.drawString("00:00", boardX+10, (30*(COL+1)+35));
+        
+        
         for(int i = 0; i < ROW; i++){
             for(int j = 0; j < COL; j++){
                 g.fillRect((30*j)+boardX,(30*i) + boardY, 30, 30);
@@ -131,32 +135,32 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         if(desVisible) {
             g.setColor(skyBlue);
-            g.fillOval((30*desX)+boardX+8,(30*desY)+boardY+8,14,14);        	
+            g.fillOval((30*desX)+boardX+8,(30*desY)+boardY+8,14,14);            
         }
  
-        
+       
         if(zombVisible) {
             g.setColor(lightGreen);
             for(int i = 0; i < ZOMBNUM; i++){
                 g.fillOval((30*zombies[i][0])+boardX+3,(30*zombies[i][1])+boardY+3,24,24);
-            }        	
+            }          
         }
-
-
-//    	g.setColor(red);
+ 
+ 
+//      g.setColor(red);
 //        for(int i = 0; i < ROW; i++){
 //            for(int j = 0; j < COL; j++){
 //                g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
 //            }
 //        }
-        
+       
         g.setColor(black);
-        
+       
         for(int i = 1; i < ROW+1; i++) {
             g.drawString(Integer.toString(i), (30*(i))+boardX-20, boardY-5);
             g.drawString(Integer.toString(i), boardX-20, (30*(i))+boardY-20);
         }
-        
+       
         g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+15);
         g.drawString(objectiveMessage, menuX, menuY);
         g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
@@ -170,12 +174,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.fillRect(menuX, menuY + legendY+30, 30, 30);
         g.setColor(lightGreen);
         g.fillRect(menuX, menuY + legendY+60, 30, 30);
-
+ 
         g.setColor(black);
         g.drawString("YOU", menuX + 40, menuY + 220);
         g.drawString("DESMOND", menuX + 40, menuY + 250);
         g.drawString("ZOMBIE", menuX + 40, menuY + 280);
-        
+       
         sortHighscores();
         for(int i = 0; i < highscores.size(); i++){
             g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+1)*20));
@@ -187,7 +191,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     public void actionPerformed(ActionEvent e){
         repaint();
-
+ 
         for(int i = 0; i < ROW; i++){
             for(int j = 0; j < COL; j++){
                 gridStatus[i][j] = 0;
@@ -235,34 +239,34 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
         if(e.getSource() == cheat) {
-        	cheatMessage = "Desmond's current location: [" + desX + ", " + desY + "]";
+            cheatMessage = "Desmond's current location: [" + desX + ", " + desY + "]";
         }
-        
+       
         if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){
             desWalk(followStatus);
             for(int i = 0; i < ZOMBNUM; i++){
                 zombWalk(i);
             }
-            
+           
         }
-        
+       
         if(e.getSource() == easy) {
-        	desVisible = true;
-        	zombVisible = true;
+            desVisible = true;
+            zombVisible = true;
         }
        
         if(e.getSource() == medium) {
-        	desVisible = false;
-        	zombVisible = true;
+            desVisible = false;
+            zombVisible = true;
         }
-        
+       
         if(e.getSource() == hard) {
-        	desVisible = false;
-        	zombVisible = false;
+            desVisible = false;
+            zombVisible = false;
         }
-        
+       
         if(desX == playX && desY == playY){
-        	desVisible = true;
+            desVisible = true;
             objectiveMessage = "RETURN DESMOND TO HOME (0, 0)";
             followStatus = true;
         }
@@ -438,7 +442,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(easy);
         add(medium);
         add(hard);
-        
+       
         up.setVisible(true);
         down.setVisible(true);
         left.setVisible(true);
@@ -498,6 +502,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
 }
+ 
+ 
+ 
+ 
+ 
  
  
  
