@@ -1,9 +1,17 @@
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DecimalFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
  
 public class SaveDesmond2 extends Applet implements ActionListener{
+	
+	static DecimalFormat twoDig = new DecimalFormat("00");
+	static LocalTime startTime;
+	static LocalTime stopTime;
+	
     static final int ROW = 11;
     static final int COL = 11;
     static final int ZOMBNUM = 5;
@@ -36,12 +44,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int menuX = 350+boardX, menuY = 20+boardY;
    
     static int moves;
+    static String displayTime = "00:00";
     static String name = "SOMEONE";
     static String distanceMessage;
     static String objectiveMessage = "FIND DESMOND";
     static String cheatMessage = "";
     static LinkedList<String> highestNames = new LinkedList<String>();
+    static LinkedList<String> highTimesNames = new LinkedList<String>();
+    static LinkedList<String> highFormattedTimes = new LinkedList<String>();
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
+    static LinkedList<Long> highTimes = new LinkedList<Long>();
  
     Button start, up, down, left, right;
     Button easy, medium, hard;
@@ -106,7 +118,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         g.setColor(lightGrey);
         g.fillRect(menuX, menuY + legendY, 150, 90);
-        g.fillRect(menuX + highscoreX-5, menuY-15, 220, 20*(highscores.size()+1));
+        g.fillRect(menuX + highscoreX-5, menuY-15, 400, 20*(highscores.size()+2));
         g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);
         g.fillRect(boardX, (30*(COL+1))+21, (10*ROW), 20);
        
@@ -114,9 +126,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
         g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);
         g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
-        g.drawRect(menuX + highscoreX-6, menuY-16, 221, 20*(highscores.size()+1)+1);
+        g.drawRect(menuX + highscoreX-6, menuY-16, 401, 20*(highscores.size()+2)+1);
         g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
-        g.drawString("00:00", boardX+10, (30*(COL+1)+35));
+        g.drawString(displayTime, boardX+10, (30*(COL+1)+35));
         
         
         for(int i = 0; i < ROW; i++){
@@ -147,12 +159,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
  
  
-//      g.setColor(red);
-//        for(int i = 0; i < ROW; i++){
-//            for(int j = 0; j < COL; j++){
-//                g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
-//            }
-//        }
+      g.setColor(red);
+        for(int i = 0; i < ROW; i++){
+            for(int j = 0; j < COL; j++){
+                g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
+            }
+        }
        
         g.setColor(black);
        
@@ -180,10 +192,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.drawString("DESMOND", menuX + 40, menuY + 250);
         g.drawString("ZOMBIE", menuX + 40, menuY + 280);
        
+        
+        g.drawString("Lowest Moves:", menuX + highscoreX, menuY+20);
+        g.drawString("Lowest Times:", menuX + highscoreX+200, menuY+20);
+
         sortHighscores();
         for(int i = 0; i < highscores.size(); i++){
-            g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+1)*20));
-            g.drawString(highscores.get(i) + " ", menuX + highscoreX+100, menuY+((i+1)*20));
+            g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+2)*20));
+            g.drawString(highscores.get(i) + " ", menuX + highscoreX+100, menuY+((i+2)*20));
+ 
+        }
+        
+        sortTimes();
+        for(int i = 0; i < highTimes.size(); i++){
+            g.drawString(highFormattedTimes.get(i), menuX + highscoreX + 300, menuY+((i+2)*20));
+            g.drawString(highTimesNames.get(i) + " ", menuX + highscoreX + 200, menuY+((i+2)*20));
  
         }
        
@@ -191,12 +214,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     public void actionPerformed(ActionEvent e){
         repaint();
- 
-        for(int i = 0; i < ROW; i++){
-            for(int j = 0; j < COL; j++){
-                gridStatus[i][j] = 0;
-            }
-        }
        
         if(e.getSource() == start){
             startPressed();
@@ -243,7 +260,18 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
         if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){
+        	gridStatus[desX][desY] = 0;
             desWalk(followStatus);
+            
+            for(int i = 0; i < ROW; i++){
+            	for(int j = 0; j < COL; j++){
+            		if(gridStatus[i][j] == 2){
+            			gridStatus[i][j] = 0;
+            		}
+            	}
+            }
+            
+            
             for(int i = 0; i < ZOMBNUM; i++){
                 zombWalk(i);
             }
@@ -292,6 +320,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             objectiveMessage = "YOU WON IN " + moves + " MOVES, PRESS START TO PLAY AGAIN";
             endGame(true);
         }
+        
+		stopTime = LocalTime.now();
+		long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
+		long mins = 0, secs = timePassed;
+		
+		
+		if(timePassed > 60){
+			while(secs > 60){
+				secs = secs - 60;
+				mins++;
+			}
+		}
+		
+		displayTime = twoDig.format(mins) + ":" + twoDig.format(secs);
+		
        
     }
  
@@ -409,8 +452,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
     public void startPressed(){
+		startTime = LocalTime.now();
         name = nameInput.getText();
         name = name.toUpperCase();
+        
         nameInput.setText("");
         nameInput.setVisible(false);
         start.setVisible(false);
@@ -460,8 +505,13 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     public void endGame(boolean won){
         if(won){
+    		stopTime = LocalTime.now();
+    		long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
             highestNames.add(name);
             highscores.add(moves);
+            highTimes.add(timePassed);
+            highTimesNames.add(name);
+            highFormattedTimes.add(displayTime);
         }
        
         nameInput.setVisible(true);
@@ -500,15 +550,32 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }          
         }
     }
+    
+    public void sortTimes(){
+        long tempScore;
+        String tempFormattedScore;
+        String tempName;
+        boolean sorted = false;
+        while(!sorted){
+            sorted = true;
+            for(int i = 0; i < highTimes.size()-1; i++){
+                if(highTimes.get(i) > highTimes.get(i+1)){
+                    sorted = false;
+                    tempScore = highTimes.get(i);
+                    tempName = highTimesNames.get(i);
+                    tempFormattedScore = highFormattedTimes.get(i);
+                   
+                    highTimes.set(i, highTimes.get(i+1));
+                    highTimesNames.set(i, highTimesNames.get(i+1));
+                    highFormattedTimes.set(i, highFormattedTimes.get(i+1));
+                   
+                    highTimes.set(i+1, tempScore);
+                    highTimesNames.set(i+1, tempName);
+                    highFormattedTimes.set(i+1, tempFormattedScore);
+                   
+                }
+            }          
+        }
+    }
    
 }
- 
- 
- 
- 
- 
- 
- 
- 
- 
-
