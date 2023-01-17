@@ -29,6 +29,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static boolean colourSwap = true;
     static boolean followStatus = false;
     static boolean showWelcome = true;
+    static boolean zombieGame = false;
     static boolean desVisible;
     static boolean zombVisible;
     static int lives = 3;
@@ -50,6 +51,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int welcomeBackgroundY = 20;
     static int [][] zombies = new int [ZOMBNUM][2]; //zombies[i][0] = x zombies[i][1] = y
     static int [][] gridStatus = new int[ROW][COL]; //GRID STATUS
+	static boolean [] targetPressed = new boolean[5];
+
     //0 = EMPTY
     //1 = HAS DESMOND
     //2 = HAS ZOMBIE
@@ -61,17 +64,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static String distanceMessage;
     static String objectiveMessage = "FIND DESMOND";
     static String cheatMessage = "";
+    static String zombFightMessage = "A zombie bit you... you must fight it now. Click it's weak points when they come up.";
     static LinkedList<String> highestNames = new LinkedList<String>();
     static LinkedList<String> highTimesNames = new LinkedList<String>();
     static LinkedList<String> highFormattedTimes = new LinkedList<String>();
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
     static LinkedList<Long> highTimes = new LinkedList<Long>();
- 
-    Button start, cont;
+    
+	static Button [] targets = new Button[5];
+	static Button target;
+    static Button start, cont;
     Button up, down, left, right;
     Button easy, medium, hard;
     Button win, cheat, giveUp;
-    TextField nameInput;
+    Button zombieFightStart;
+    static TextField nameInput;
    
    
     static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>"};
@@ -83,12 +90,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         start = new Button("START");
         start.addActionListener(this);
-        nameInput = new TextField();
+        nameInput = new TextField("                ");
+        nameInput.setText("");
         nameInput.addActionListener(this);
-        nameInput.setBounds(50, 100, 200, 30);
         add(nameInput);
         add(start);
-       
+        
         cont = new Button("CONTINUE");
         cont.addActionListener(this);
         cont.setBackground(red);
@@ -137,133 +144,147 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         giveUp.addActionListener(this);
         giveUp.setBounds(padX + 320, padY, 100, 30);
        
+        zombieFightStart = new Button("FIGHT");
+        zombieFightStart.addActionListener(this);
+        zombieFightStart.setBounds(500, 350, 150, 50);
+        
+        for(int i = 0; i < 5; i++){        	
+        	targets[i] = new Button();
+        	targets[i].setBackground(lightGreen);
+        	targets[i].setBounds(roll(0, WINDOWWIDTH), roll(0, WINDOWHEIGHT), 50, 50);
+        	targets[i].addActionListener(this);
+        	targetPressed[i] = false;
+        }
        
     }
-   
+    
     public void paint(Graphics g){
-       
-        g.setColor(lightGrey);
-        g.fillRect(menuX + highscoreX-5, menuY-15, 400, 20*(highscores.size()+2));
-        g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);
-        g.fillRect(boardX, (30*(COL+1))+21, (10*ROW), 20);
-       
-        g.setColor(black);
-        g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
-        g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);
-        g.drawRect(menuX + highscoreX-6, menuY-16, 401, 20*(highscores.size()+2)+1);
-        g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
-        g.drawString(displayTime, boardX+10, (30*(COL+1)+35));
-        
-        g.setColor(red);
-		int heartSizeX = 20;
-        int [] heartCoordsX = {(int) (boardX+(30*ROW)-(1.25*heartSizeX))+10, (int) (boardX+(30*ROW)-(2.5*heartSizeX))+10, (int) (boardX+(30*ROW)-(3.75*heartSizeX)+10)};
-        int [] heartCoordsY = {30*(COL+1)+40, 30*(COL+1)+40, 30*(COL+1)+40};
-        
- 
-		
-		for(int i = 0; i < lives; i++){
-			int heartX = heartCoordsX[i];
-			int heartY = heartCoordsY[i];
-			int heartSizeY = (int)(heartSizeX*0.75);
-			int [] x = {heartX, heartX-(heartSizeX/2), heartX+(heartSizeX/2)};
-			int [] y = {heartY, heartY-heartSizeY, heartY-heartSizeY};
-			
-			g.fillPolygon(x, y, 3);
-			g.fillOval(heartX-(heartSizeX/2)+1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
-			g.fillOval(heartX-1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
-		}
- 
-       
-		
-       g.setColor(black);
-        for(int i = 0; i < ROW; i++){
-            for(int j = 0; j < COL; j++){
-                g.fillRect((30*j)+boardX,(30*i) + boardY, 30, 30);
-                if(g.getColor() == lightGrey){
-                    g.setColor(black);
-                }else if(g.getColor() == black){
-                    g.setColor(lightGrey);
+    	
+    	if(!zombieGame){
+            g.setColor(lightGrey);
+            g.fillRect(menuX + highscoreX-5, menuY-15, 400, 20*(highscores.size()+2));
+            g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);
+            g.fillRect(boardX, (30*(COL+1))+21, (10*ROW), 20);
+           
+            g.setColor(black);
+            g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
+            g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);
+            g.drawRect(menuX + highscoreX-6, menuY-16, 401, 20*(highscores.size()+2)+1);
+            g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
+            g.drawString(displayTime, boardX+10, (30*(COL+1)+35));
+            
+//            g.setColor(red);
+//    		int heartSizeX = 20;
+//            int [] heartCoordsX = {(int) (boardX+(30*ROW)-(1.25*heartSizeX))+10, (int) (boardX+(30*ROW)-(2.5*heartSizeX))+10, (int) (boardX+(30*ROW)-(3.75*heartSizeX)+10)};
+//            int [] heartCoordsY = {30*(COL+1)+40, 30*(COL+1)+40, 30*(COL+1)+40};
+//            
+//     
+//    		
+//    		for(int i = 0; i < lives; i++){
+//    			int heartX = heartCoordsX[i];
+//    			int heartY = heartCoordsY[i];
+//    			int heartSizeY = (int)(heartSizeX*0.75);
+//    			int [] x = {heartX, heartX-(heartSizeX/2), heartX+(heartSizeX/2)};
+//    			int [] y = {heartY, heartY-heartSizeY, heartY-heartSizeY};
+//    			
+//    			g.fillPolygon(x, y, 3);
+//    			g.fillOval(heartX-(heartSizeX/2)+1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
+//    			g.fillOval(heartX-1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
+//    		}
+     
+           
+    		
+           g.setColor(black);
+            for(int i = 0; i < ROW; i++){
+                for(int j = 0; j < COL; j++){
+                    g.fillRect((30*j)+boardX,(30*i) + boardY, 30, 30);
+                    if(g.getColor() == lightGrey){
+                        g.setColor(black);
+                    }else if(g.getColor() == black){
+                        g.setColor(lightGrey);
+                    }
                 }
             }
-        }
-       
-        g.setColor(red);
-        g.fillOval((30*playX)+boardX+5,(30*playY)+boardY+5,20,20);
-       
-        if(desVisible) {
-            g.setColor(skyBlue);
-            g.fillOval((30*desX)+boardX+8,(30*desY)+boardY+8,14,14);            
-        }
- 
-       
-        if(zombVisible) {
-            g.setColor(lightGreen);
-            for(int i = 0; i < ZOMBNUM; i++){
-                g.fillOval((30*zombies[i][0])+boardX+3,(30*zombies[i][1])+boardY+3,24,24);
-            }          
-        }
- 
- 
-      g.setColor(red);
-        for(int i = 0; i < ROW; i++){
-            for(int j = 0; j < COL; j++){
-                g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
+           
+            g.setColor(red);
+            g.fillOval((30*playX)+boardX+5,(30*playY)+boardY+5,20,20);
+           
+            if(desVisible) {
+                g.setColor(skyBlue);
+                g.fillOval((30*desX)+boardX+8,(30*desY)+boardY+8,14,14);            
             }
-        }
-       
-        g.setColor(black);
-       
-        for(int i = 1; i < ROW+1; i++) {
-            g.drawString(Integer.toString(i), (30*(i))+boardX-20, boardY-5);
-            g.drawString(Integer.toString(i), boardX-20, (30*(i))+boardY-20);
-        }
-       
-        g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+15);
-        g.drawString(objectiveMessage, menuX, menuY);
-        g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
-        g.drawString("MOVES: " + moves, menuX, menuY+40);
-        g.drawString(cheatMessage, menuX, menuY+60);
-        g.drawString("HIGHSCORES:", menuX + highscoreX, menuY);
-       
-        g.setColor(lightGrey);
-        g.fillRect(menuX, menuY + legendY, 150, 90);
-       
-        g.setColor(red);
-        g.fillRect(menuX, menuY + legendY, 30, 30);
-        g.setColor(skyBlue);
-        g.fillRect(menuX, menuY + legendY+30, 30, 30);
-        g.setColor(lightGreen);
-        g.fillRect(menuX, menuY + legendY+60, 30, 30);
- 
-        g.setColor(black);
-        g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
-       
-        g.setColor(black);
-        g.drawString("YOU", menuX + 40, menuY + 220);
-        g.drawString("DESMOND", menuX + 40, menuY + 250);
-        g.drawString("ZOMBIE", menuX + 40, menuY + 280);
-       
-       
-       
-        g.drawString("Lowest Moves:", menuX + highscoreX, menuY+20);
-        g.drawString("Lowest Times:", menuX + highscoreX+200, menuY+20);
- 
-        sortHighscores();
-        for(int i = 0; i < highscores.size(); i++){
-            g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+2)*20));
-            g.drawString(highscores.get(i) + " ", menuX + highscoreX+100, menuY+((i+2)*20));
- 
-        }
-       
-        sortTimes();
-        for(int i = 0; i < highTimes.size(); i++){
-            g.drawString(highFormattedTimes.get(i), menuX + highscoreX + 300, menuY+((i+2)*20));
-            g.drawString(highTimesNames.get(i) + " ", menuX + highscoreX + 200, menuY+((i+2)*20));
- 
-        }
-       
-        g.setColor(grey);
-        g.fillRect(0, 0, coverX, coverY);
+     
+           
+            if(zombVisible) {
+                g.setColor(lightGreen);
+                for(int i = 0; i < ZOMBNUM; i++){
+                    g.fillOval((30*zombies[i][0])+boardX+3,(30*zombies[i][1])+boardY+3,24,24);
+                }          
+            }
+     
+     
+          g.setColor(red);
+            for(int i = 0; i < ROW; i++){
+                for(int j = 0; j < COL; j++){
+                    g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);
+                }
+            }
+           
+            g.setColor(black);
+           
+            for(int i = 1; i < ROW+1; i++) {
+                g.drawString(Integer.toString(i), (30*(i))+boardX-20, boardY-5);
+                g.drawString(Integer.toString(i), boardX-20, (30*(i))+boardY-20);
+            }
+           
+            g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+15);
+            g.drawString(objectiveMessage, menuX, menuY);
+            g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
+            g.drawString("MOVES: " + moves, menuX, menuY+40);
+            g.drawString(cheatMessage, menuX, menuY+60);
+            g.drawString("HIGHSCORES:", menuX + highscoreX, menuY);
+           
+            g.setColor(lightGrey);
+            g.fillRect(menuX, menuY + legendY, 150, 90);
+           
+            g.setColor(red);
+            g.fillRect(menuX, menuY + legendY, 30, 30);
+            g.setColor(skyBlue);
+            g.fillRect(menuX, menuY + legendY+30, 30, 30);
+            g.setColor(lightGreen);
+            g.fillRect(menuX, menuY + legendY+60, 30, 30);
+     
+            g.setColor(black);
+            g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
+           
+            g.setColor(black);
+            g.drawString("YOU", menuX + 40, menuY + 220);
+            g.drawString("DESMOND", menuX + 40, menuY + 250);
+            g.drawString("ZOMBIE", menuX + 40, menuY + 280);
+           
+           
+           
+            g.drawString("Lowest Moves:", menuX + highscoreX, menuY+20);
+            g.drawString("Lowest Times:", menuX + highscoreX+200, menuY+20);
+     
+            sortHighscores();
+            for(int i = 0; i < highscores.size(); i++){
+                g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+2)*20));
+                g.drawString(highscores.get(i) + " ", menuX + highscoreX+100, menuY+((i+2)*20));
+     
+            }
+           
+            sortTimes();
+            for(int i = 0; i < highTimes.size(); i++){
+                g.drawString(highFormattedTimes.get(i), menuX + highscoreX + 300, menuY+((i+2)*20));
+                g.drawString(highTimesNames.get(i) + " ", menuX + highscoreX + 200, menuY+((i+2)*20));
+     
+            }
+           
+            g.setColor(grey);
+            g.fillRect(0, 0, coverX, coverY);    		
+    	}
+
        
         if(showWelcome) {
             g.setColor(lightGrey);
@@ -280,11 +301,18 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);            
         }
  
+        if(zombieGame){
+        	g.setColor(red);
+        	g.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
+        	g.setColor(white);
+        	g.drawString(zombFightMessage, 300, 500);
+        	
+        }
+        
        
     }
    
     public void actionPerformed(ActionEvent e){
-        repaint();
        
         if(e.getSource() == start){
             startPressed();
@@ -363,7 +391,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             desVisible = false;
             zombVisible = false;
         }
-        
        
         if(desX == playX && desY == playY){
             desVisible = true;
@@ -373,16 +400,25 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         if(gridStatus[playX][playY] == 2){
             objectiveMessage = "A ZOMBIE ATE YOU!";
-            lives--;
-            if(lives == 0){
-            	objectiveMessage = objectiveMessage + " YOU DIED";
-                endGame(false);
+            if(playX != 0 && gridStatus[playX-1][playY] != 2){
+            	playX--;
+            }else if(gridStatus[playX+1][playY] != 2){
+            	playX++;
+            }else if(playY != 0 && gridStatus[playX][playY-1] != 2){
+            	playY--;
             }else{
-            	objectiveMessage = objectiveMessage + " YOU LOST A LIFE";
+            	playY++;
             }
+            zombieFight();
+
+//            if(lives == 0){
+//            	objectiveMessage = objectiveMessage + " YOU DIED";
+//                endGame(false);
+//            }else{
+//            	objectiveMessage = objectiveMessage + " YOU LOST A LIFE";
+//            }
             
         }
-       
         
         int distance = Math.abs(desX-playX) + Math.abs(desY-playY);
        
@@ -405,7 +441,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             coverX = highscoreX+menuX-10;
             coverY = WINDOWHEIGHT;
             showWelcome = true;
-           
+            nameInput.setVisible(true);
+            start.setVisible(true);
             cont.setVisible(false);
         }
         
@@ -422,10 +459,44 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
         displayTime = twoDig.format(mins) + ":" + twoDig.format(secs);
-       
-       
+        
+        if(e.getSource() == zombieFightStart){
+        	for(int i = 0; i < targets.length; i++){
+        		add(targets[i]);
+        		targets[i].setVisible(true);
+        	}
+        	zombieFightStart.setVisible(false);
+        	zombFightMessage = "";
+        }
+        
+        for(int i = 0; i < targets.length; i++){
+        	if(e.getSource() == targets[i]){
+        		targets[i].setVisible(false);
+        		targetPressed[i] = true;
+        	}
+        }
+        
+        if(targetPressed[0] && targetPressed[1] && targetPressed[2] && targetPressed[3] && targetPressed[4]){
+    		zombieGame = false;
+            up.setVisible(true);
+            down.setVisible(true);
+            left.setVisible(true);
+            right.setVisible(true);
+            win.setVisible(true);
+            cheat.setVisible(true);
+            giveUp.setVisible(true);
+            easy.setVisible(true);
+            medium.setVisible(true);
+            hard.setVisible(true);
+            for(int i = 0; i < targetPressed.length; i++){
+            	targetPressed[i] = false;
+            }
+        }
+        
+        repaint();
+
     }
- 
+    
     public static int roll(int min, int max){
         return (int)Math.round((Math.random()*(max-min)) + min);
     }
@@ -608,8 +679,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
         cont.setVisible(true);
-        nameInput.setVisible(true);
-        start.setVisible(true);
         up.setVisible(false);
         down.setVisible(false);
         left.setVisible(false);
@@ -672,7 +741,28 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }          
         }
     }
+    
+    public void zombieFight(){
+    	zombieGame = true;
+        zombFightMessage = "A zombie bit you... you must fight it now. Click it's weak points when they come up.";
+        zombieFightStart.setVisible(true);
+    	add(zombieFightStart);
+        up.setVisible(false);
+        down.setVisible(false);
+        left.setVisible(false);
+        right.setVisible(false);
+        win.setVisible(false);
+        cheat.setVisible(false);
+        giveUp.setVisible(false);
+        easy.setVisible(false);
+        medium.setVisible(false);
+        hard.setVisible(false);
+        repaint();
+
+//        for(int i = 0; i < 5; i++){        	
+//        	targets[i].setBounds(roll(0, WINDOWWIDTH), roll(0, WINDOWHEIGHT), 50, 50);
+//        }
+        
+    }
    
 }
- 
- 
