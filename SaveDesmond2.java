@@ -117,7 +117,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     public void paint(Graphics g){
        
         g.setColor(lightGrey);
-        g.fillRect(menuX, menuY + legendY, 150, 90);
         g.fillRect(menuX + highscoreX-5, menuY-15, 400, 20*(highscores.size()+2));
         g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);
         g.fillRect(boardX, (30*(COL+1))+21, (10*ROW), 20);
@@ -125,7 +124,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.setColor(black);
         g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
         g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);
-        g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
         g.drawRect(menuX + highscoreX-6, menuY-16, 401, 20*(highscores.size()+2)+1);
         g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
         g.drawString(displayTime, boardX+10, (30*(COL+1)+35));
@@ -180,6 +178,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.drawString(cheatMessage, menuX, menuY+60);
         g.drawString("HIGHSCORES:", menuX + highscoreX, menuY);
        
+        g.setColor(lightGrey);
+        g.fillRect(menuX, menuY + legendY, 150, 90);
+        
         g.setColor(red);
         g.fillRect(menuX, menuY + legendY, 30, 30);
         g.setColor(skyBlue);
@@ -188,10 +189,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.fillRect(menuX, menuY + legendY+60, 30, 30);
  
         g.setColor(black);
+        g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
+        
+        g.setColor(black);
         g.drawString("YOU", menuX + 40, menuY + 220);
         g.drawString("DESMOND", menuX + 40, menuY + 250);
         g.drawString("ZOMBIE", menuX + 40, menuY + 280);
        
+        
         
         g.drawString("Lowest Moves:", menuX + highscoreX, menuY+20);
         g.drawString("Lowest Times:", menuX + highscoreX+200, menuY+20);
@@ -579,3 +584,13 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
 }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
