@@ -72,14 +72,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     TextField nameInput;
    
     
-    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible", "HARD: Only player is visible"};
+    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible", "HARD: Only player is visible", "Please enter your name and press <START>"};
 
     public void init(){
         resize(1500, 750);
         setBackground(grey);
        
        
-        start = new Button("Start");
+        start = new Button("START");
         start.addActionListener(this);
         nameInput = new TextField();
         nameInput.addActionListener(this);
@@ -253,6 +253,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.drawString(welcomeMessage[2], welcomeX, welcomeY+40);
         g.drawString(welcomeMessage[3], welcomeX, welcomeY+60);
         g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
+        g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);
         
     }
    
@@ -345,6 +346,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             welcomeMessage[2] = "EASY: Desmond and zombies visible";
             welcomeMessage[3] = "MEDIUM: Zombies visible";
             welcomeMessage[4] = "HARD: Only player is visible";
+            welcomeMessage[5] = "Please enter your name and press <START>";
 
             welcomeBackgroundX = 1000;
             welcomeBackgroundY = 20;
