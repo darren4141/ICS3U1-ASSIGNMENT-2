@@ -7,11 +7,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
  
 public class SaveDesmond2 extends Applet implements ActionListener{
-	
-	static DecimalFormat twoDig = new DecimalFormat("00");
-	static LocalTime startTime;
-	static LocalTime stopTime;
-	
+   
+    static DecimalFormat twoDig = new DecimalFormat("00");
+    static LocalTime startTime;
+    static LocalTime stopTime;
+   
     static final int ROW = 11;
     static final int COL = 11;
     static final int ZOMBNUM = 5;
@@ -31,6 +31,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static boolean showWelcome = true;
     static boolean desVisible;
     static boolean zombVisible;
+    static int lives = 3;
     static int boardX = 30;
     static int boardY = 30;
     static int playX = 0;
@@ -72,9 +73,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     Button win, cheat, giveUp;
     TextField nameInput;
    
-    
-    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible", "HARD: Only player is visible", "Please enter your name and press <START>"};
-
+   
+    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>"};
+ 
     public void init(){
         resize(1500, 750);
         setBackground(grey);
@@ -88,11 +89,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(nameInput);
         add(start);
        
-        cont = new Button("Continue");
+        cont = new Button("CONTINUE");
         cont.addActionListener(this);
         cont.setBackground(red);
         cont.setBounds(menuX, menuY+80, 250, 50);
-        
+       
         easy = new Button("Easy");
         easy.addActionListener(this);
         medium = new Button("Medium");
@@ -118,12 +119,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         left.setBounds(padX-30, padY, 30, 30);
         left.setBackground(darkGrey);
         left.setForeground(black);
-
+ 
         right = new Button(">");
         right.addActionListener(this);
         right.setBounds(padX+30, padY, 30, 30);
         right.setBackground(darkGrey);
-
+ 
         win = new Button("WIN");
         win.addActionListener(this);
         win.setBounds(padX + 100, padY, 100, 30);
@@ -153,7 +154,28 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
         g.drawString(displayTime, boardX+10, (30*(COL+1)+35));
         
+        g.setColor(red);
+		int heartSizeX = 20;
+        int [] heartCoordsX = {(int) (boardX+(30*ROW)-(1.25*heartSizeX))+10, (int) (boardX+(30*ROW)-(2.5*heartSizeX))+10, (int) (boardX+(30*ROW)-(3.75*heartSizeX)+10)};
+        int [] heartCoordsY = {30*(COL+1)+40, 30*(COL+1)+40, 30*(COL+1)+40};
         
+ 
+		
+		for(int i = 0; i < lives; i++){
+			int heartX = heartCoordsX[i];
+			int heartY = heartCoordsY[i];
+			int heartSizeY = (int)(heartSizeX*0.75);
+			int [] x = {heartX, heartX-(heartSizeX/2), heartX+(heartSizeX/2)};
+			int [] y = {heartY, heartY-heartSizeY, heartY-heartSizeY};
+			
+			g.fillPolygon(x, y, 3);
+			g.fillOval(heartX-(heartSizeX/2)+1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
+			g.fillOval(heartX-1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
+		}
+ 
+       
+		
+       g.setColor(black);
         for(int i = 0; i < ROW; i++){
             for(int j = 0; j < COL; j++){
                 g.fillRect((30*j)+boardX,(30*i) + boardY, 30, 30);
@@ -205,7 +227,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         g.setColor(lightGrey);
         g.fillRect(menuX, menuY + legendY, 150, 90);
-        
+       
         g.setColor(red);
         g.fillRect(menuX, menuY + legendY, 30, 30);
         g.setColor(skyBlue);
@@ -215,24 +237,24 @@ public class SaveDesmond2 extends Applet implements ActionListener{
  
         g.setColor(black);
         g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
-        
+       
         g.setColor(black);
         g.drawString("YOU", menuX + 40, menuY + 220);
         g.drawString("DESMOND", menuX + 40, menuY + 250);
         g.drawString("ZOMBIE", menuX + 40, menuY + 280);
        
-        
-        
+       
+       
         g.drawString("Lowest Moves:", menuX + highscoreX, menuY+20);
         g.drawString("Lowest Times:", menuX + highscoreX+200, menuY+20);
-
+ 
         sortHighscores();
         for(int i = 0; i < highscores.size(); i++){
             g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+2)*20));
             g.drawString(highscores.get(i) + " ", menuX + highscoreX+100, menuY+((i+2)*20));
  
         }
-        
+       
         sortTimes();
         for(int i = 0; i < highTimes.size(); i++){
             g.drawString(highFormattedTimes.get(i), menuX + highscoreX + 300, menuY+((i+2)*20));
@@ -242,32 +264,32 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         g.setColor(grey);
         g.fillRect(0, 0, coverX, coverY);
-        
+       
         if(showWelcome) {
             g.setColor(lightGrey);
             g.fillRect(welcomeX-5, welcomeY-welcomeBackgroundY, welcomeBackgroundX, ((welcomeBackgroundY+1)*welcomeMessage.length));
-
+ 
             g.setColor(black);
             g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY-1, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1);
-            
+           
             g.drawString(welcomeMessage[0], welcomeX, welcomeY);
             g.drawString(welcomeMessage[1], welcomeX, welcomeY+20);
             g.drawString(welcomeMessage[2], welcomeX, welcomeY+40);
             g.drawString(welcomeMessage[3], welcomeX, welcomeY+60);
             g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
-            g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);        	
+            g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);            
         }
-
-        
+ 
+       
     }
    
     public void actionPerformed(ActionEvent e){
         repaint();
-        
+       
         if(e.getSource() == start){
             startPressed();
         }
-        
+       
         if(e.getSource() == up){
             if(playY != 0){
                 moves++;
@@ -309,18 +331,18 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
         if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){
-        	gridStatus[desX][desY] = 0;
+            gridStatus[desX][desY] = 0;
             desWalk(followStatus);
-            
+           
             for(int i = 0; i < ROW; i++){
-            	for(int j = 0; j < COL; j++){
-            		if(gridStatus[i][j] == 2){
-            			gridStatus[i][j] = 0;
-            		}
-            	}
+                for(int j = 0; j < COL; j++){
+                    if(gridStatus[i][j] == 2){
+                        gridStatus[i][j] = 0;
+                    }
+                }
             }
-            
-            
+           
+           
             for(int i = 0; i < ZOMBNUM; i++){
                 zombWalk(i);
             }
@@ -341,26 +363,27 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             desVisible = false;
             zombVisible = false;
         }
-       
-        if(e.getSource() == cont){
-            coverX = highscoreX+menuX-10;
-            coverY = WINDOWHEIGHT;
-            showWelcome = true;
-            
-            cont.setVisible(false);
-        }
         
+       
         if(desX == playX && desY == playY){
             desVisible = true;
-            objectiveMessage = "RETURN DESMOND TO HOME (0, 0)";
+            objectiveMessage = "RETURN DESMOND TO HOME (1, 1)";
             followStatus = true;
         }
        
         if(gridStatus[playX][playY] == 2){
-            objectiveMessage = "A ZOMBIE ATE YOU! YOU DIED, PRESS START TO PLAY AGAIN";
-            endGame(false);
+            objectiveMessage = "A ZOMBIE ATE YOU!";
+            lives--;
+            if(lives == 0){
+            	objectiveMessage = objectiveMessage + " YOU DIED";
+                endGame(false);
+            }else{
+            	objectiveMessage = objectiveMessage + " YOU LOST A LIFE";
+            }
+            
         }
        
+        
         int distance = Math.abs(desX-playX) + Math.abs(desY-playY);
        
         if(distance == 0){
@@ -373,25 +396,33 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             distanceMessage = "Pretty cold! (" + distance + " tiles away)";
         }
        
-        if(followStatus && playX == 0 && playY == 0){
+        if(followStatus && playX == 0 && playY == 0 && e.getSource() != cont){
             objectiveMessage = "YOU WON IN " + moves + " MOVES, PRESS START TO PLAY AGAIN";
             endGame(true);
         }
         
-		stopTime = LocalTime.now();
-		long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
-		long mins = 0, secs = timePassed;
-		
-		
-		if(timePassed > 60){
-			while(secs > 60){
-				secs = secs - 60;
-				mins++;
-			}
-		}
-		
-		displayTime = twoDig.format(mins) + ":" + twoDig.format(secs);
-		
+        if(e.getSource() == cont){
+            coverX = highscoreX+menuX-10;
+            coverY = WINDOWHEIGHT;
+            showWelcome = true;
+           
+            cont.setVisible(false);
+        }
+        
+        stopTime = LocalTime.now();
+        long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
+        long mins = 0, secs = timePassed;
+       
+       
+        if(timePassed > 60){
+            while(secs > 60){
+                secs = secs - 60;
+                mins++;
+            }
+        }
+       
+        displayTime = twoDig.format(mins) + ":" + twoDig.format(secs);
+       
        
     }
  
@@ -509,13 +540,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
     public void startPressed(){
-    	coverX = 0; coverY = 0;
-    	showWelcome = false;
-    	
-		startTime = LocalTime.now();
+    	lives = 3;
+        coverX = 0; coverY = 0;
+        showWelcome = false;
+       
+        startTime = LocalTime.now();
         name = nameInput.getText();
         name = name.toUpperCase();
-        
+       
         nameInput.setText("");
         nameInput.setVisible(false);
         start.setVisible(false);
@@ -548,7 +580,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(medium);
         add(hard);
         add(cont);
-        
+       
         cont.setVisible(false);
         up.setVisible(true);
         down.setVisible(true);
@@ -562,12 +594,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         hard.setVisible(true);
  
     }
-    
+   
     public void endGame(boolean won){
-
+ 
         if(won){
-    		stopTime = LocalTime.now();
-    		long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
+            stopTime = LocalTime.now();
+            long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
             highestNames.add(name);
             highscores.add(moves);
             highTimes.add(timePassed);
@@ -588,7 +620,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         easy.setVisible(false);
         medium.setVisible(false);
         hard.setVisible(false);
-        
+       
     }
    
     public void sortHighscores(){
@@ -613,7 +645,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }          
         }
     }
-    
+   
     public void sortTimes(){
         long tempScore;
         String tempFormattedScore;
@@ -642,3 +674,5 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
 }
+ 
+ 
