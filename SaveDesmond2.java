@@ -28,6 +28,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     static boolean colourSwap = true;
     static boolean followStatus = false;
+    static boolean showWelcome = true;
     static boolean desVisible;
     static boolean zombVisible;
     static int boardX = 30;
@@ -242,18 +243,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         g.setColor(grey);
         g.fillRect(0, 0, coverX, coverY);
         
-        g.setColor(lightGrey);
-        g.fillRect(welcomeX-5, welcomeY-welcomeBackgroundY, welcomeBackgroundX, ((welcomeBackgroundY+1)*welcomeMessage.length));
+        if(showWelcome) {
+            g.setColor(lightGrey);
+            g.fillRect(welcomeX-5, welcomeY-welcomeBackgroundY, welcomeBackgroundX, ((welcomeBackgroundY+1)*welcomeMessage.length));
 
-        g.setColor(black);
-        g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY-1, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1);
-        
-        g.drawString(welcomeMessage[0], welcomeX, welcomeY);
-        g.drawString(welcomeMessage[1], welcomeX, welcomeY+20);
-        g.drawString(welcomeMessage[2], welcomeX, welcomeY+40);
-        g.drawString(welcomeMessage[3], welcomeX, welcomeY+60);
-        g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
-        g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);
+            g.setColor(black);
+            g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY-1, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1);
+            
+            g.drawString(welcomeMessage[0], welcomeX, welcomeY);
+            g.drawString(welcomeMessage[1], welcomeX, welcomeY+20);
+            g.drawString(welcomeMessage[2], welcomeX, welcomeY+40);
+            g.drawString(welcomeMessage[3], welcomeX, welcomeY+60);
+            g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
+            g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);        	
+        }
+
         
     }
    
@@ -341,15 +345,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         if(e.getSource() == cont){
             coverX = highscoreX+menuX-10;
             coverY = WINDOWHEIGHT;
-            welcomeMessage[0] = "Welcome to SAVE DESMOND!";
-            welcomeMessage[1] = "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!";
-            welcomeMessage[2] = "EASY: Desmond and zombies visible";
-            welcomeMessage[3] = "MEDIUM: Zombies visible";
-            welcomeMessage[4] = "HARD: Only player is visible";
-            welcomeMessage[5] = "Please enter your name and press <START>";
-
-            welcomeBackgroundX = 1000;
-            welcomeBackgroundY = 20;
+            showWelcome = true;
             
             cont.setVisible(false);
         }
@@ -513,13 +509,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
     public void startPressed(){
-        welcomeBackgroundX = 0;
-        welcomeBackgroundY = 0;
-    	
     	coverX = 0; coverY = 0;
-    	for(int i = 0; i < welcomeMessage.length; i++){
-    		welcomeMessage[i] = "";
-    	}
+    	showWelcome = false;
     	
 		startTime = LocalTime.now();
         name = nameInput.getText();
