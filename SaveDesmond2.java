@@ -15,6 +15,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static final int ROW = 11;
     static final int COL = 11;
     static final int ZOMBNUM = 5;
+    static final int WINDOWWIDTH = 1500;
+    static final int WINDOWHEIGHT = 750;
     static Color black = new Color(0,0,0);
     static Color white = new Color(255,255,255);
     static Color red = new Color(255,0,0);
@@ -22,6 +24,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Color lightGreen = new Color(122, 230, 76);
     static Color grey = new Color(211,211,211);
     static Color lightGrey = new Color(220,220,220);
+    static Color darkGrey = new Color(105,105,105);
    
     static boolean colourSwap = true;
     static boolean followStatus = false;
@@ -34,14 +37,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int desX = roll(7, 9), desY = roll(7, 9);
     static int padX = 100, padY = 450;
     static int legendY = 200;
+    static int menuX = 350+boardX;
+    static int menuY = 20+boardY;
     static int highscoreX = 500;
+    static int coverX = WINDOWWIDTH;
+    static int coverY = WINDOWHEIGHT;
+    static int welcomeX = (WINDOWWIDTH/2)-500;
+    static int welcomeY = (WINDOWHEIGHT/2)-100;
+    static int welcomeBackgroundX = 1000;
+    static int welcomeBackgroundY = 20;
     static int [][] zombies = new int [ZOMBNUM][2]; //zombies[i][0] = x zombies[i][1] = y
     static int [][] gridStatus = new int[ROW][COL]; //GRID STATUS
     //0 = EMPTY
     //1 = HAS DESMOND
     //2 = HAS ZOMBIE
    
-    static int menuX = 350+boardX, menuY = 20+boardY;
    
     static int moves;
     static String displayTime = "00:00";
@@ -55,11 +65,15 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
     static LinkedList<Long> highTimes = new LinkedList<Long>();
  
-    Button start, up, down, left, right;
+    Button start, cont;
+    Button up, down, left, right;
     Button easy, medium, hard;
     Button win, cheat, giveUp;
     TextField nameInput;
    
+    
+    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible", "HARD: Only player is visible"};
+
     public void init(){
         resize(1500, 750);
         setBackground(grey);
@@ -73,6 +87,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(nameInput);
         add(start);
        
+        cont = new Button("Continue");
+        cont.addActionListener(this);
+        cont.setBackground(red);
+        cont.setBounds(menuX, menuY+80, 250, 50);
+        
         easy = new Button("Easy");
         easy.addActionListener(this);
         medium = new Button("Medium");
@@ -86,19 +105,24 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         up = new Button("^");
         up.addActionListener(this);
         up.setBounds(padX, padY-30, 30, 30);
+        up.setBackground(darkGrey);
        
         down = new Button("v");
         down.addActionListener(this);
         down.setBounds(padX, padY+30, 30, 30);
+        down.setBackground(darkGrey);
  
         left = new Button("<");
         left.addActionListener(this);
         left.setBounds(padX-30, padY, 30, 30);
- 
+        left.setBackground(darkGrey);
+        left.setForeground(black);
+
         right = new Button(">");
         right.addActionListener(this);
         right.setBounds(padX+30, padY, 30, 30);
-       
+        right.setBackground(darkGrey);
+
         win = new Button("WIN");
         win.addActionListener(this);
         win.setBounds(padX + 100, padY, 100, 30);
@@ -215,15 +239,30 @@ public class SaveDesmond2 extends Applet implements ActionListener{
  
         }
        
+        g.setColor(grey);
+        g.fillRect(0, 0, coverX, coverY);
+        
+        g.setColor(lightGrey);
+        g.fillRect(welcomeX-5, welcomeY-welcomeBackgroundY, welcomeBackgroundX, ((welcomeBackgroundY+1)*welcomeMessage.length));
+
+        g.setColor(black);
+        g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY-1, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1);
+        
+        g.drawString(welcomeMessage[0], welcomeX, welcomeY);
+        g.drawString(welcomeMessage[1], welcomeX, welcomeY+20);
+        g.drawString(welcomeMessage[2], welcomeX, welcomeY+40);
+        g.drawString(welcomeMessage[3], welcomeX, welcomeY+60);
+        g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
+        
     }
    
     public void actionPerformed(ActionEvent e){
         repaint();
-       
+        
         if(e.getSource() == start){
             startPressed();
         }
-       
+        
         if(e.getSource() == up){
             if(playY != 0){
                 moves++;
@@ -298,6 +337,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             zombVisible = false;
         }
        
+        if(e.getSource() == cont){
+            coverX = highscoreX+menuX-10;
+            coverY = WINDOWHEIGHT;
+            welcomeMessage[0] = "Welcome to SAVE DESMOND!";
+            welcomeMessage[1] = "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!";
+            welcomeMessage[2] = "EASY: Desmond and zombies visible";
+            welcomeMessage[3] = "MEDIUM: Zombies visible";
+            welcomeMessage[4] = "HARD: Only player is visible";
+
+            welcomeBackgroundX = 1000;
+            welcomeBackgroundY = 20;
+            
+            cont.setVisible(false);
+        }
+        
         if(desX == playX && desY == playY){
             desVisible = true;
             objectiveMessage = "RETURN DESMOND TO HOME (0, 0)";
@@ -457,6 +511,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
     public void startPressed(){
+        welcomeBackgroundX = 0;
+        welcomeBackgroundY = 0;
+    	
+    	coverX = 0; coverY = 0;
+    	for(int i = 0; i < welcomeMessage.length; i++){
+    		welcomeMessage[i] = "";
+    	}
+    	
 		startTime = LocalTime.now();
         name = nameInput.getText();
         name = name.toUpperCase();
@@ -492,7 +554,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(easy);
         add(medium);
         add(hard);
-       
+        add(cont);
+        
+        cont.setVisible(false);
         up.setVisible(true);
         down.setVisible(true);
         left.setVisible(true);
@@ -505,10 +569,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         hard.setVisible(true);
  
     }
-   
-   
-   
+    
     public void endGame(boolean won){
+
         if(won){
     		stopTime = LocalTime.now();
     		long timePassed = startTime.until(stopTime, ChronoUnit.SECONDS);
@@ -519,6 +582,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             highFormattedTimes.add(displayTime);
         }
        
+        cont.setVisible(true);
         nameInput.setVisible(true);
         start.setVisible(true);
         up.setVisible(false);
@@ -531,6 +595,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         easy.setVisible(false);
         medium.setVisible(false);
         hard.setVisible(false);
+        
     }
    
     public void sortHighscores(){
@@ -584,13 +649,3 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }
    
 }
- 
- 
- 
- 
- 
- 
- 
- 
- 
-
