@@ -652,7 +652,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }
         }
        
-        if(zombieGame && zombFightMessage.equals("")){
+        if(zombieGame && zombFightMessage.equals("")){//if we are playing the zombie game and start has been pressed
         	stopZombieTime = LocalTime.now();
             displayZombieTime = "Time left: " + (ZOMBIETIMELIM-startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS)) + " seconds";//find the time passed from when we started this game to now
 
@@ -660,14 +660,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
         
         if(targetPressed[0] && targetPressed[1] && targetPressed[2] && targetPressed[3] && targetPressed[4]){//if all 5 targets are pressed
-        	displayZombieTime = "";
+        	displayZombieTime = "";//empty display zombie time
         	stopZombieTime = LocalTime.now();
-        	if(startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM){
+        	if(startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM){//if the time they took is greater than the time limit
         		objectiveMessage = "You took too long to kill the zombie and lost a life!";
-        		lives--;
-        		if(lives <= 0){
+        		lives--;//decrease the loves
+        		if(lives <= 0) {//if the lives reaches 0
             		objectiveMessage = "You have 0 lives, you died!";
-            		endGame(false);
+            		endGame(false);//end the game, with a loss
         		}
 
 
