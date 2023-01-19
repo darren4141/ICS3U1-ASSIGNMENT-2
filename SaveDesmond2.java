@@ -100,10 +100,6 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
  
-
-
-
-
 //start of class
 public class SaveDesmond2 extends Applet implements ActionListener{
    
@@ -115,9 +111,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static LocalTime startZombieTime;
     static LocalTime stopZombieTime;
    
-    static final int ROW = 11;
-    static final int COL = 11;
-    static final int ZOMBNUM = 5;
+    static final int ROW = 17;
+    static final int COL = 17;
+    static final int ZOMBNUM = 15;
     static final int WINDOWWIDTH = 1500;
     static final int WINDOWHEIGHT = 750;
     static Color black = new Color(0,0,0);
@@ -128,23 +124,30 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Color grey = new Color(211,211,211);
     static Color lightGrey = new Color(220,220,220);
     static Color darkGrey = new Color(105,105,105);
+    static Color orange = new Color(252, 132, 3);
+    static Color brown = new Color(115, 64, 28);
     
     static boolean followStatus = false;
     static boolean showWelcome = true;
     static boolean zombieGame = false;
     static boolean desVisible;
     static boolean zombVisible;
+    static boolean heartSpawned = false;
     static final int ZOMBIETIMELIM = 5;
     static int lives = 3;
     static int playX = 0;
     static int playY = 0;
-    static int desX = roll(7, 9), desY = roll(7, 9);
+    static int desX = roll(ROW-5, ROW-1);
+    static int desY = roll(COL-5, COL-1);
     static int boardX = 30;
     static int boardY = 30;
-    static int padX = 100, padY = 450;
-    static int legendY = 200;
-    static int menuX = 350+boardX;
+    static int padX = 100;
+    static int padY = (COL*30) + 140;
+    static int legendY = (30*(COL-4));
+    static int menuX = (30*ROW)+20+boardX;
     static int menuY = 20+boardY;
+    static int heartPowerupX;
+    static int heartPowerupY;
     static int highscoreX = 500;
     static int coverX = WINDOWWIDTH;
     static int coverY = WINDOWHEIGHT;
@@ -157,6 +160,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     //0 = EMPTY
     //1 = HAS DESMOND
     //2 = HAS ZOMBIE
+    //3 = HAS UNWALKABLE PATH
+    //4 = HAS HEART POWERUP
     static boolean [] targetPressed = new boolean[5];
    
     static int moves;
@@ -172,6 +177,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static LinkedList<String> highFormattedTimes = new LinkedList<String>();
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
     static LinkedList<Long> highTimes = new LinkedList<Long>();
+    static LinkedList<Integer> searchedX = new LinkedList<Integer>();
+    static LinkedList<Integer> searchedY = new LinkedList<Integer>();
    
     static Button [] targets = new Button[5];
     static Button start, cont;
@@ -181,6 +188,15 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     Button zombieFightStart;
     static TextField nameInput;
    
+    static Font title = new Font("Forte", Font.BOLD, 20);
+    static Font gameBoard = new Font("Elephant", Font.BOLD, 25);
+    static Font header = new Font("Elephant", Font.BOLD, 15);
+    static Font subheader = new Font("Arial", Font.ITALIC, 14);
+    static Font small = new Font("Arial", Font.PLAIN, 11);
+    static Font def = new Font("Arial", Font.PLAIN, 13);
+    static Font bold = new Font("Arial", Font.BOLD, 13);
+
+    
    
     static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>"};
  
@@ -189,12 +205,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     public void init(){
         resize(1500, 750);//resize window size
         setBackground(grey);//set background colour
-       
         //--> CREATE, PLACE, AND INITIALIZE BUTTONS
         start = new Button("START"); //declare a new button that has the text "START"
         start.addActionListener(this);//make it so that start can be clicked
         nameInput = new TextField("                ");//create a text field to input the name, spaces are for resizing
-        nameInput.setText("");//empty the text feild
+        nameInput.setText("");//empty the text field
         nameInput.addActionListener(this);//make it so that text can be taken from the textField
         add(nameInput);//add textfield to the window
         add(start);//add button to the window
@@ -202,7 +217,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         cont = new Button("CONTINUE");
         cont.addActionListener(this);
         cont.setBackground(red);//set background colour of button
-        cont.setBounds(menuX, menuY+80, 250, 50);//set location and size of the button
+        cont.setBounds(menuX, menuY+120, 250, 50);//set location and size of the button
        
         easy = new Button("Easy");
         easy.addActionListener(this);
@@ -265,49 +280,44 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
     //PAINT METHOD - all Java applets require a paint method which is where thing are actually shown on the screen using Graphics object
     public void paint(Graphics g){
-       
+       g.setFont(def);
        
         if(!zombieGame){//don't print any of this if we are currently playing the zombie game
            
-            //--> PRINT INITIAL BOARD AND BOXES
-            //these rectangles are background "textboxes"
-            g.setColor(lightGrey);
-            g.fillRect(menuX + highscoreX-5, menuY-15, 400, 20*(highscores.size()+2));//leaderboard rectangle's size is based on amount of values in the LinkedList
-            g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);
-            g.fillRect(boardX, (30*(COL+1))+21, (10*ROW), 20);
-            //fillRect method parameters: (x location of top left corner, y location of top left corner, width, height)
-           
-           
-            //these rectanges are the borders to the above textboxes, their dimensions start 1 pixel before the textboxes and extend 1 extra pixel horizontally and vertically
-            g.setColor(black);
-            g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
-            g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);
-            g.drawRect(menuX + highscoreX-6, menuY-16, 401, 20*(highscores.size()+2)+1);
-            g.drawRect(boardX-1, (30*(COL+1))+20, (10*ROW)+1, 21);
-            //drawRect method parameters: (x location of top left corner, y location of top left corner, width, height)
+          //--> PRINT INITIAL BOARD AND BOXES
+          //these rectangles are background "textboxes"
+          g.setColor(lightGrey);
+          g.fillRect(menuX + highscoreX-5, menuY-15, 400, 20*(highscores.size()+2));//leaderboard rectangle's size is based on amount of values in the LinkedList
+          g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);//<name>'s game DISPLAY BOX
+          g.fillRect(boardX, (30*(COL+1))+21, (20*ROW), 30);//time and lives DISPLAY BOX
+          //fillRect method parameters: (x location of top left corner, y location of top left corner, width, height)
+          
+          
+          //these rectanges are the borders to the above textboxes, their dimensions start 1 pixel before the textboxes and extend 1 extra pixel horizontally and vertically
+          g.setColor(black);
+          g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
+          g.drawRect(menuX + highscoreX-6, menuY-16, 401, 20*(highscores.size()+2)+1);//highscore display border
+          g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);//<name>'s game DISPLAY BORDER
+          g.drawRect(boardX-1, (30*(COL+1))+20, (20*ROW)+1, 31);//time and lives DISPLAY BORDER
+          //drawRect method parameters: (x location of top left corner, y location of top left corner, width, height)
 
-
-
-
-            g.drawString(displayTime, boardX+10, (30*(COL+1)+35));//output that displays the current time taken
+          g.setFont(title);
+          g.drawString(displayTime, boardX+10, (30*(COL+1)+42));//output that displays the current time taken
+          g.drawString("MOVES: " + moves, boardX+220, (30*(COL+1)+42));
            
           g.setColor(red);
           int heartSizeX = 20;
-          int [] heartCoordsX = {(int) (boardX+(30*ROW)-(1.25*heartSizeX))+10, (int) (boardX+(30*ROW)-(2.5*heartSizeX))+10, (int) (boardX+(30*ROW)-(3.75*heartSizeX)+10)};
-          int [] heartCoordsY = {30*(COL+1)+40, 30*(COL+1)+40, 30*(COL+1)+40};
-            
+          int heartSizeY = (int)(heartSizeX*0.75);            
     
           
       	   for(int i = 0; i < lives; i++){
-        	  int heartX = heartCoordsX[i];
-              int heartY = heartCoordsY[i];
-              int heartSizeY = (int)(heartSizeX*0.75);
+        	  int heartX = (int)(boardX+(30*ROW)-((1.25+(i*1.25))*heartSizeX))+10;
+              int heartY = 30*(COL+1)+40;
               int [] x = {heartX, heartX-(heartSizeX/2), heartX+(heartSizeX/2)};
               int [] y = {heartY, heartY-heartSizeY, heartY-heartSizeY};
-              
               g.fillPolygon(x, y, 3);
-              g.fillOval(heartX-(heartSizeX/2)+1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
-              g.fillOval(heartX-1, heartY-heartSizeY-(heartSizeY/4), heartSizeX/2, heartSizeX/2);
+              g.fillOval(heartX-(heartSizeX/2)+1, heartY-heartSizeY-(heartSizeY/4)-2, heartSizeX/2, heartSizeX/2);
+              g.fillOval(heartX-1, heartY-heartSizeY-(heartSizeY/4)-2, heartSizeX/2, heartSizeX/2);
            }
      
            
@@ -324,7 +334,20 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     }
                 }
             }
-           
+            
+            //--> DISPLAY PAST MOVES
+            g.setColor(red);
+            g.setFont(gameBoard);
+            if(searchedX.size() < 10){
+            	for(int i = searchedX.size()-2; i >= 0; i--){
+            		g.drawString("X",30*(searchedX.get(i)+1)+7, 30*(searchedY.get(i)+2)-5);
+            	}
+            }else{
+            	for(int i = searchedX.size()-2; i >= searchedX.size()-10; i--){
+            		g.drawString("X",30*(searchedX.get(i)+1)+7, 30*(searchedY.get(i)+2)-5);
+            	}
+            }
+            
             //--> DISPLAY CHARACTERS
             //fillOval method parameters: (x location, y location, width, height), to draw a circle, width == height
             g.setColor(red);
@@ -343,34 +366,62 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                 }          
             }
      
-     
-          g.setColor(red);
+            g.setFont(def);
+            
+            //--> DISPLAY POWERUPS
+            if(heartSpawned){
+            	g.setColor(red);
+
+            	int [] x = {(heartPowerupX*30)+45, ((heartPowerupX*30)-(heartSizeX/2))+45, ((heartPowerupX*30)+(heartSizeX/2))+45};
+            	int [] y = {(heartPowerupY*30)+55, ((heartPowerupY*30)-heartSizeY)+55, ((heartPowerupY*30)-heartSizeY)+55};
+            	  
+            	g.fillPolygon(x, y, 3);
+            	g.fillOval((heartPowerupX*30)-(heartSizeX/2)+46, (heartPowerupY*30)-heartSizeY-(heartSizeY/4)+53, heartSizeX/2, heartSizeX/2);
+            	g.fillOval((heartPowerupX*30)+44, (heartPowerupY*30)-heartSizeY-(heartSizeY/4)+53, heartSizeX/2, heartSizeX/2);
+            }
+            
+            //FOR ERRORCHECKING
+            g.setColor(red);
             for(int i = 0; i < ROW; i++){//iterate through rows
                 for(int j = 0; j < COL; j++){//iterate through columns
-                    g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);//output gridstatus FOR ERRORCHECKING
+                    g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);//output gridstatus
                 }
             }
            
             g.setColor(black);
-           
-           
             //--> DISPLAY COORDINATE PLANE
             for(int i = 1; i < ROW+1; i++) {//iterate through the number of rows, starting from 1
                 g.drawString(Integer.toString(i), (30*(i))+boardX-20, boardY-5);//print horizontal legend
-                g.drawString(Integer.toString(i), boardX-20, (30*(i))+boardY-20);//print vertical legend
+                g.drawString(Integer.toString(i), boardX-20, (30*(i))+boardY-10);//print vertical legend
             }
-           
+            
             //--> DISPLAY MENU
-           
-            g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+15);
+            g.setFont(title);
             g.drawString(objectiveMessage, menuX, menuY);
+            
+            g.setFont(bold);
+            g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+16);
+            g.setFont(def);
             g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
-            g.drawString("MOVES: " + moves, menuX, menuY+40);
-            g.drawString(cheatMessage, menuX, menuY+60);
+            g.drawString("Careful! You can't cross your own path <X>", menuX, menuY+40);
+            g.drawString("Step on the heart to gain an extra life!", menuX, menuY+60);
+            
+            if(heartSpawned){
+                g.drawString("Heart location: (" + (heartPowerupX+1) + ", " + (heartPowerupY+1) + ")", menuX, menuY+80);
+
+            }else{
+                g.drawString("Heart location: not spawned", menuX, menuY+80);
+            }
+
+            g.setFont(title);
+            g.drawString(cheatMessage, menuX, menuY+120);
+            
+            g.setFont(header);
             g.drawString("HIGHSCORES:", menuX + highscoreX, menuY);
             //these variables are all meant to be updated periodically as the game is player
            
             //--> DISPLAY LEGEND
+            g.setFont(def);
             g.setColor(lightGrey);
             g.fillRect(menuX, menuY + legendY, 150, 90);
            
@@ -384,17 +435,20 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(black);
             g.drawRect(menuX-1, menuY+legendY-1, 151, 91);
            
+            g.setFont(bold);
             g.setColor(black);
-            g.drawString("YOU", menuX + 40, menuY + 220);
-            g.drawString("DESMOND", menuX + 40, menuY + 250);
-            g.drawString("ZOMBIE", menuX + 40, menuY + 280);
+            g.drawString("YOU", menuX + 40, menuY + legendY+20);
+            g.drawString("DESMOND", menuX + 40, menuY + legendY+50);
+            g.drawString("ZOMBIE", menuX + 40, menuY + legendY+80);
            
            
            //--> DISPLAY LEADERBOARD
+            g.setFont(subheader);
             g.drawString("Lowest Moves:", menuX + highscoreX, menuY+20);
             g.drawString("Lowest Times:", menuX + highscoreX+200, menuY+20);
      
             sortHighscores();//sort the highscores
+            g.setFont(def);
             for(int i = 0; i < highscores.size(); i++){//iterate through all highscores
                 g.drawString(highestNames.get(i), menuX + highscoreX, menuY+((i+2)*20));//print corresponding names
                 g.drawString(highscores.get(i) + " ", menuX + highscoreX+100, menuY+((i+2)*20));//print lowest moves
@@ -424,11 +478,17 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY-1, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1); //message border with the same idea as above
            
             //print the welcome message
+            g.setFont(header);
             g.drawString(welcomeMessage[0], welcomeX, welcomeY);
+            g.setColor(darkGrey);
             g.drawString(welcomeMessage[1], welcomeX, welcomeY+20);
+            g.setColor(lightGreen);
             g.drawString(welcomeMessage[2], welcomeX, welcomeY+40);
+            g.setColor(orange);
             g.drawString(welcomeMessage[3], welcomeX, welcomeY+60);
+            g.setColor(red);
             g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
+            g.setColor(darkGrey);
             g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);            
         }
        
@@ -437,6 +497,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(red);
             g.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT);//cover the entire screen in red
             g.setColor(white);
+            g.setFont(title);
             g.drawString(zombFightMessage, 300, 300);//print instructions
             g.drawString(displayZombieTime, 300, 200);
            
@@ -444,10 +505,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
        
     }//end of graphics()
-   
-   
+    
     //actionPerformed method - a method that runs every time an action is performed (key press, click, etc) and the action is stored in ActionEvent e
     public void actionPerformed(ActionEvent e){
+    	boolean moved = false;
     	if(lives <= 0){
     		objectiveMessage = "You have 0 lives, you died!";
     		endGame(false);
@@ -455,6 +516,20 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     		objectiveMessage = "Find Desmond!";
     	}
     	
+    	if(moves > 5 && !heartSpawned){
+    		heartPowerupX = roll(ROW - 8, ROW - 1);
+    		heartPowerupY = roll(COL - 8, COL - 1);
+    		heartSpawned = true;
+    	}
+    	
+    	if(heartSpawned){
+    		gridStatus[heartPowerupX][heartPowerupY] = 4;
+    		if(gridStatus[playX][playY] == 4){
+    			lives++;
+    			heartSpawned = false;
+    			gridStatus[heartPowerupX][heartPowerupY] = 0;
+    		}
+    	}
     	
         if(e.getSource() == start){//if start button is pressed
             startPressed();//run startPressed method
@@ -462,33 +537,85 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         //--> MOVEMENT CONDITIONS
         if(e.getSource() == up){
+        	boolean canMove = true;
             if(playY != 0){//check that the player isn't going to go out of bounds
-                moves++;//increment move count
-                playY--;//move player
+            	if(gridStatus[playX][playY - 1] == 3){
+            		canMove = false;
+            	}
+                
+                if(canMove){
+                	moves++;//increment move count
+                	playY--;//move player
+                	moved = true;
+                }
             }
         }
        
         if(e.getSource() == down){
-            if(playY != 10){
-                moves++;
-                playY++;
+        	boolean canMove = true;
+            if(playY != ROW-1){
+            	if(gridStatus[playX][playY + 1] == 3){
+            		canMove = false;
+            	}
+                
+                if(canMove){
+                    moves++;
+                    playY++;
+                    moved = true;
+                }
+
             }
         }
        
         if(e.getSource() == left){
+        	boolean canMove = true;
             if(playX != 0){
-                moves++;
-                playX--;
+            	if(gridStatus[playX - 1][playY] == 3){
+            		canMove = false;
+            	}
+                
+                if(canMove){
+                	moves++;
+                	playX--;     
+                	moved = true;
+                }
             }
         }
        
         if(e.getSource() == right){
-            if(playX != 10){
-                moves++;
-                playX++;
+        	boolean canMove = true;
+            if(playX != COL-1){
+            	if(gridStatus[playX + 1][playY] == 3){
+            		canMove = false;
+            	}
+                if(canMove){
+                	moves++;
+                	playX++;
+                	moved = true;
+                }
             }
         }
        
+        if(searchedX.size() < 10){
+        	for(int i = searchedX.size()-2; i >= 0; i--){
+        		if(gridStatus[searchedX.get(i)][searchedY.get(i)] == 0){
+            		gridStatus[searchedX.get(i)][searchedY.get(i)] = 3;
+        		}
+        	}
+        }else{
+        	for(int i = searchedX.size()-2; i >= searchedX.size()-10; i--){
+        		if(gridStatus[searchedX.get(i)][searchedY.get(i)] == 0){
+            		gridStatus[searchedX.get(i)][searchedY.get(i)] = 3;
+
+        		}        	}
+        	for(int i = 0; i < searchedX.size()-10; i++){
+        		if(gridStatus[searchedX.get(i)][searchedY.get(i)] == 3){
+            		gridStatus[searchedX.get(i)][searchedY.get(i)] = 0;
+        		}
+        	}
+        	
+        }
+        
         //all of the movement selection is the same
        
         //--> IF MENU BUTTONS ARE PRESSED
@@ -501,12 +628,18 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
         if(e.getSource() == cheat) {
-            cheatMessage = "Desmond's current location: [" + desX + ", " + desY + "]";//Display the cheat method with desmond's location
+            cheatMessage = "Desmond's current location: [" + (desX+1) + ", " + (desY+1) + "]";//Display the cheat method with desmond's location
         }
        
+        if(!cheatMessage.equals("") && e.getSource() != cheat){
+        	cheatMessage = "";
+        }
+        
         //--> NPC MOVEMENT
-        if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){//if the player moves:
+        if((e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right) && moved){//if the player moves:
             gridStatus[desX][desY] = 0; //reset gridStatus array location for Desmond
+            searchedX.add(playX);
+            searchedY.add(playY);
             desWalk(followStatus); //desmond will move randomly if followStatus is false and follow the player if followStatus is true
            
             for(int i = 0; i < ROW; i++){//iterate through array
@@ -596,7 +729,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //--> WIN
         if(followStatus && playX == 0 && playY == 0 && e.getSource() != cont){//if desmond is following the player and they reach home
         	if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){
-                objectiveMessage = "YOU WON IN " + moves + " MOVES, PRESS START TO PLAY AGAIN";//update message
+                objectiveMessage = "YOU WON IN " + moves + " MOVES";//update message
                 endGame(true);//we win        		
         	}
         }
@@ -664,7 +797,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         	stopZombieTime = LocalTime.now();
         	if(startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM){//if the time they took is greater than the time limit
         		objectiveMessage = "You took too long to kill the zombie and lost a life!";
-        		lives--;//decrease the loves
+        		lives--;//decrease the number of lives
         		if(lives <= 0) {//if the lives reaches 0
             		objectiveMessage = "You have 0 lives, you died!";
             		endGame(false);//end the game, with a loss
@@ -714,7 +847,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             int direction = roll(1, 6);//choose a random direction, 1-4 being up, down, left, right, and 5-6 being stand still
             switch(direction){
                 case 1:
-                    if(desY != COL-1 && gridStatus[desX][desY+1] != 2){//if desmond isnt on the rightmost column and if his location doesnt have a zombie
+                    if(desY != COL-1 && gridStatus[desX][desY+1] == 0){//if desmond isnt on the rightmost column and if his location doesnt have a zombie
                         desY++;//moves desmond
                         validCommand = true;//lets us break the loop
                     }else{
@@ -722,7 +855,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     }
                     break;
                 case 2:
-                    if(desY > 0 && gridStatus[desX][desY-1] != 2){
+                    if(desY > 0 && gridStatus[desX][desY-1] == 0){
                         desY--;
                         validCommand = true;
                     }else{
@@ -730,7 +863,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     }
                     break;
                 case 3:
-                    if(desX != ROW-1 && gridStatus[desX+1][desY] != 2){
+                    if(desX != ROW-1 && gridStatus[desX+1][desY] == 0){
                         desX++;
                         validCommand = true;
                     }else{
@@ -738,7 +871,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     }
                     break;
                 case 4:
-                    if(desX > 0 && gridStatus[desX-1][desY] != 2){
+                    if(desX > 0 && gridStatus[desX-1][desY] == 0){
                         desX--;
                         validCommand = true;
                     }else{
@@ -824,7 +957,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         lives = 3;
         coverX = 0; coverY = 0;//make the cover "invisible"
         showWelcome = false;//hide the welcome message
-       
+        heartSpawned = false;
+        
+        for(int i = 0; i < gridStatus.length; i++){
+        	for(int j = 0; j < gridStatus.length; j++){
+        		gridStatus[i][j] = 0;
+        	}
+        }
+        
         startTime = LocalTime.now();//set start time
         name = nameInput.getText();//set name to whatever is in the textField
         name = name.toUpperCase();//change name to uppercase
@@ -838,18 +978,22 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         moves = 0;
         followStatus = false;
  
-        desX = roll(7, 9);//reroll desmond location (desmond can only spawn near the bottom right)
-        desY = roll(7, 9);
-       
+        desX = roll(ROW-5, ROW-1);//reroll desmond location (desmond can only spawn near the bottom right)
+        desY = roll(COL-5, COL-1);
+        
         gridStatus[desX][desY] = 1;//update gridStatus with desmond location
        
         for(int i = 0; i < zombies.length; i++){//iterate through all zombies
-            zombies[i][0] = roll(2,6);//reroll zombie locations (zombies can't spawn on top of you or desmond)
-            zombies[i][1] = roll(2,6);
-           
+            zombies[i][0] = roll(2,ROW-4);//reroll zombie locations (zombies can't spawn on top of you or desmond)
+            zombies[i][1] = roll(2,ROW-4);
+            
             gridStatus[zombies[i][0]][zombies[i][1]] = 2;//update gridStatus with zombies location
         }
        
+        //CLEAR MOVE HISTORY
+        searchedX.clear();
+        searchedY.clear();
+        
         //ADD BUTTONS
         add(up);
         add(down);
@@ -990,9 +1134,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         medium.setVisible(false);
         hard.setVisible(false);
         repaint();//refresh screen
-
-
-
 
 //        for(int i = 0; i < 5; i++){          
 //          targets[i].setBounds(roll(0, WINDOWWIDTH), roll(0, WINDOWHEIGHT), 50, 50);
