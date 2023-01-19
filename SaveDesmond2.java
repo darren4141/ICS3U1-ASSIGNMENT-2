@@ -201,7 +201,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 
     
    
-    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>", "highscores are calculated using moves, times, and remaining lives"};
+    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>", "Highscores are calculated using moves, times, and remaining lives"};
  
    
     //INIT METHOD, ALL APPLETS REQUIRE AND RUN THE INIT METHOD BEFORE ANYTHING ELSE    
@@ -459,6 +459,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
      
             }
             
+            sortHighscores();
             for(int i = 0; i < highscoreMoves.size(); i++){//iterate through all highscoreMoves
                 g.drawString(highestMovesNames.get(i), menuX + highscoreX + 200, menuY+((i+2)*20));//print corresponding names
                 g.drawString(highscoreMoves.get(i) + " ", menuX + highscoreX + 300, menuY+((i+2)*20));//print lowest moves
@@ -500,7 +501,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.drawString(welcomeMessage[4], welcomeX, welcomeY+80);
             g.setColor(darkGrey);
             g.drawString(welcomeMessage[5], welcomeX, welcomeY+100);     
-            g.drawString(welcomeMessage[5], welcomeX, welcomeY+120);
+            g.drawString(welcomeMessage[6], welcomeX, welcomeY+120);
         }
        
         //--> ZOMBIE GAME
@@ -1074,7 +1075,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
    
    
     //--> SORT HIGHSCOREMOVES METHOD
-    public void sorthighscoreMoves(){
+    public void sorthighscoreMoves(){//sort from smallest (i == 0) to largest (i == highscoreMoves.size())
         //declare temporary score and name for swapping
         int tempScore;
         String tempName;
@@ -1103,7 +1104,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }//end of sorthighscoreMoves method
    
     //--> SORT TIMES METHOD
-    public void sortTimes(){
+    public void sortTimes(){//sort from smallest (i == 0) to largest (i == highTimes.size())
         //temporary variables for swapping
         long tempScore;
         String tempFormattedScore;
@@ -1134,7 +1135,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }//end of sortTimes method
     
     //--> SORT HIGHSCORES METHOD
-    public void sorthighscores(){
+    public void sortHighscores(){//sort from largest (i == 0) to smallest (i == highscores.size())
         //declare temporary score and name for swapping
         int tempScore;
         String tempName;
@@ -1143,7 +1144,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         while(!sorted){//while it has not been sorted
             sorted = true; //if we get through the entire for loop below without triggering the if statement, that means our LinkedList is sorted and we can move on
             for(int i = 0; i < highscores.size()-1; i++){//iterate through highscoreMoves except for the last one
-                if(highscores.get(i) > highscores.get(i+1)){//compare the highscore with its following one, if they are out of order,
+                if(highscores.get(i) < highscores.get(i+1)){//compare the highscore with its following one, if they are out of order,
                    
                     //--> SWAP
                     sorted = false;
