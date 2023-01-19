@@ -196,6 +196,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Font small = new Font("Arial", Font.PLAIN, 11);
     static Font def = new Font("Arial", Font.PLAIN, 13);
     static Font bold = new Font("Arial", Font.BOLD, 13);
+    static Font menuBold = new Font("Arial", Font.BOLD, 15);
     static Font time = new Font("Roboto", Font.BOLD, 40);
     static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>", "Highscores are calculated using moves, times, and remaining lives"};
  
@@ -400,12 +401,19 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setFont(title);
             g.drawString(objectiveMessage, menuX, menuY);
             
-            g.setFont(bold);
+            g.setFont(menuBold);
             g.drawString(name + "'s GAME", boardX+10, boardY+(30*COL)+16);
-            g.setFont(def);
-            g.drawString("Distance from Desmond: " + distanceMessage, menuX, menuY+20);
-            g.drawString("Careful! You can't cross your own path <X>", menuX, menuY+40);
-            g.drawString("Step on the heart to gain an extra life!", menuX, menuY+60);
+            g.drawString("Distance from Desmond: ", menuX, menuY+20);
+            g.setColor(blue);
+            g.drawString("                                            " + distanceMessage, menuX, menuY+20);
+            
+            g.setColor(black);
+            g.drawString("Careful! You can't cross your own path", menuX, menuY+40);
+            g.drawString("Step on the            to gain an extra life!", menuX, menuY+60);
+            
+            g.setColor(red);
+            g.drawString("                      heart", menuX, menuY+60);
+            g.drawString("                                                                     <X>", menuX, menuY+40);
             
             if(heartSpawned){
                 g.drawString("Heart location: (" + (heartPowerupX+1) + ", " + (heartPowerupY+1) + ")", menuX, menuY+80);
@@ -415,7 +423,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                 g.drawString("Heart location: not spawned", menuX, menuY+80);
             }
 
-
+            g.setColor(black);
             g.setFont(title);
             g.drawString(cheatMessage, menuX, menuY+120);
             
@@ -1047,11 +1055,15 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             for(int i = 0; i < highnames.size(); i++){//loop through highscore names
             	if(name.equals(highnames.get(i))){//if our name is already on the leaderboard
             		//update the elements with the name instead of adding new elements
-            		highscoreMoves.set(i, moves);
-            		highFormattedTimes.set(i, displayTime);
-            		highTimes.set(i, timePassed);
                 	highscores.set(i, calcHighscore(moves, timePassed, lives));
             		updated = true;//to prevent the code from adding the values after we updated them
+            	}
+            	if(name.equals(highTimesNames.get(i))) {
+            		highFormattedTimes.set(i, displayTime);
+            		highTimes.set(i, timePassed);
+            	}
+            	if(name.equals(highestMovesNames.get(i))) {
+            		highscoreMoves.set(i, moves);
             	}
             }
             
@@ -1203,5 +1215,4 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         repaint();//refresh screen
        
     }
-   
 }
