@@ -522,7 +522,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //--> ZOMBIE GAME
         if(zombieGame){//only run this code if we are playing the zombie game
             g.setColor(red);
-            g.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT);//cover the entire screen in red
+            //g.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT);//cover the entire screen in red
             g.setColor(white);
             g.setFont(title);
             g.drawString(zombFightMessage, (WINDOWWIDTH/2)-600, 300);//print instructions
@@ -731,7 +731,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                 if(followStatus){//if desmond is following the plyer, make sure they follow this movement too
                 	desX--;
                 }
-            }else if(gridStatus[playX+1][playY] != 2){
+            }else if(playX != ROW && gridStatus[playX+1][playY] != 2){
                 playX++;
                 if(followStatus){
                 	desX++;
@@ -741,13 +741,33 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                 if(followStatus){
                 	desY--;
                 }
-            }else{
+            }else if (playY != COL && gridStatus[playX][playY+1] != 2){
                 playY++;
                 if(followStatus){
                 	desY++;
                 }
+            }else if(playX > 1 && gridStatus[playX-2][playY] != 2){
+                playX -= 2;
+                if(followStatus){//if desmond is following the plyer, make sure they follow this movement too
+                	desX -= 2;
+                }
+            }else if(playX < ROW-1 && gridStatus[playX+2][playY] != 2){
+                playX += 2;
+                if(followStatus){//if desmond is following the plyer, make sure they follow this movement too
+                	desX += 2;
+                }
+            }else if(playY > 1 && gridStatus[playX][playY-2] != 2){
+                playY -= 2;
+                if(followStatus){//if desmond is following the plyer, make sure they follow this movement too
+                	desY -= 2;
+                }
+            }else if(playY < COL-1 && gridStatus[playX][playY+2] != 2){
+                playY += 2;
+                if(followStatus){//if desmond is following the plyer, make sure they follow this movement too
+                	desY += 2;
+                }
             }
-           
+            	 
             zombieFight();//run zombieFight method which starts the minigame
            
         }
@@ -809,10 +829,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             zombFightMessage = "";//empty message
             startZombieTime = LocalTime.now();
         	stopZombieTime = LocalTime.now();
-
-
-
-
             displayZombieTime = "Time left: " + ZOMBIETIMELIM + " seconds";
         }
        
@@ -833,19 +849,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
         
     	if(zombieGame){
-        	stopZombieTime = LocalTime.now();
-	        if((targetPressed[0] && targetPressed[1] && targetPressed[2] && targetPressed[3] && targetPressed[4])||startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM){//if all 5 targets are pressed
-	        	displayZombieTime = "";//empty display zombie time
-	        	stopZombieTime = LocalTime.now();
-	        	if(startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM){//if the time they took is greater than the time limit
-	        		objectiveMessage = "You took too long to kill the zombie and lost a life!";
-	        		lives--;//decrease the number of lives
-	        		if(lives <= 0) {//if the lives reaches 0
-	            		objectiveMessage = "You have 0 lives, you died!";
-	            		endGame(false);//end the game, with a loss
-	        		}
-	        	}
+    		if(startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM) {
 	            zombieGame = false;//end zombie game
+        		objectiveMessage = "You took too long to kill the zombie and lost a life!";
+        		lives--;//decrease the number of lives
+        		
 	            //make all of the buttons visible again
 	            up.setVisible(true);
 	            down.setVisible(true);
@@ -857,10 +865,50 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	            easy.setVisible(true);
 	            medium.setVisible(true);
 	            hard.setVisible(true);
+	            zombieFightStart.setVisible(false);
+
 	            for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
 	                targetPressed[i] = false;
 	                targets[i].setVisible(false);//make target invisible
 	            }
+	            
+        		if(lives <= 0) {//if the lives reaches 0
+            		objectiveMessage = "You have 0 lives, you died!";
+            		endGame(false);//end the game, with a loss
+        		}
+    		}
+    		
+        	stopZombieTime = LocalTime.now();
+	        if((targetPressed[0] && targetPressed[1] && targetPressed[2] && targetPressed[3] && targetPressed[4])){//if all 5 targets are pressed
+	        	displayZombieTime = "";//empty display zombie time
+	        	stopZombieTime = LocalTime.now();
+	        	if(startZombieTime.until(stopZombieTime, ChronoUnit.SECONDS) > ZOMBIETIMELIM){//if the time they took is greater than the time limit
+		            zombieGame = false;//end zombie game
+	        		objectiveMessage = "You took too long to kill the zombie and lost a life!";
+	        		lives--;//decrease the number of lives
+	        	}
+	            //make all of the buttons visible again
+	            up.setVisible(true);
+	            down.setVisible(true);
+	            left.setVisible(true);
+	            right.setVisible(true);
+	            win.setVisible(true);
+	            cheat.setVisible(true);
+	            giveUp.setVisible(true);
+	            easy.setVisible(true);
+	            medium.setVisible(true);
+	            hard.setVisible(true);
+	            zombieFightStart.setVisible(false);
+	            for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
+	                targetPressed[i] = false;
+	                targets[i].setVisible(false);//make target invisible
+	            }
+	            
+        		if(lives <= 0) {//if the lives reaches 0
+            		objectiveMessage = "You have 0 lives, you died!";
+            		endGame(false);//end the game, with a loss
+        		}
+	            
 	        }
     	}
         repaint();//repaints the entire board after all of our updates
@@ -1157,14 +1205,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	return (int) (((100/moveCount) + (600/timePassedSeconds) + 1000)*(0.5*remainingLives));
     }
     
-    
-    //--> SORT HIGHSCOREMOVES METHOD
     public void sorthighscoreMoves(){//sort from smallest (i == 0) to largest (i == highscoreMoves.size())
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method sorthighscoreMoves is a method that sorts the lowest moves and their respective names with bubble sort
+    	//----------------------------------------------------------------------------------------------------------------
+
         //declare temporary score and name for swapping
         int tempScore;
         String tempName;
         boolean sorted = false;
-       
+
         while(!sorted){//while it has not been sorted
             sorted = true; //if we get through the entire for loop below without triggering the if statement, that means our LinkedList is sorted and we can move on
             for(int i = 0; i < highscoreMoves.size()-1; i++){//iterate through highscoreMoves except for the last one
@@ -1187,8 +1237,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
     }//end of sorthighscoreMoves method
    
-    //--> SORT TIMES METHOD
     public void sortTimes(){//sort from smallest (i == 0) to largest (i == highTimes.size())
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method sortTimes is a method that sorts the lowest moves and their respective names with bubble sort
+    	//----------------------------------------------------------------------------------------------------------------
         //temporary variables for swapping
         long tempScore;
         String tempFormattedScore;
@@ -1218,8 +1270,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
     }//end of sortTimes method
     
-    //--> SORT HIGHSCORES METHOD
     public void sortHighscores(){//sort from largest (i == 0) to smallest (i == highscores.size())
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method sortHighscores is a method that sorts the lowest moves and their respective names with bubble sort
+    	//----------------------------------------------------------------------------------------------------------------
         //declare temporary score and name for swapping
         int tempScore;
         String tempName;
@@ -1246,12 +1300,19 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
        
     }//end of sortTimes method
-   
-    //--ZOMBIE FIGHT METHOD
+    
     public void zombieFight(){
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method zombieFight is a method that starts the zombie target fight minigame
+    	//The function sets boolean zombieGame to true which will trigger the paint and actionPerformed method to
+    	//play the target game instead of the default game
+    	//----------------------------------------------------------------------------------------------------------------
         zombieGame = true;//so that we will print zombie game section in the paint method
         zombFightMessage = "A zombie bit you... you must fight it now. Click it's weak points when they come up. Are you ready? You'll have " + ZOMBIETIMELIM + " seconds";//update method
         zombieFightStart.setVisible(true);
+        startZombieTime = LocalTime.now();
+        stopZombieTime = LocalTime.now();
+        displayZombieTime = "";
         add(zombieFightStart);//add start fight button
         //make all gameplay buttons invisible
         up.setVisible(false);
@@ -1267,4 +1328,5 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         repaint();//refresh screen
        
     }
-}
+
+}//end of class
