@@ -200,9 +200,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Font time = new Font("Roboto", Font.BOLD, 40);
     static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>", "Highscores are calculated using moves, times, and remaining lives"};
  
-   
-    //INIT METHOD, ALL APPLETS REQUIRE AND RUN THE INIT METHOD BEFORE ANYTHING ELSE    
     public void init(){
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method init is a required method by java applets and it runs every time you click run
+        //This method just initializes things like buttons and textboxes aswell as resizing the window width and height
+    	//----------------------------------------------------------------------------------------------------------------
         resize(WINDOWWIDTH, WINDOWHEIGHT);//resize window size
         setBackground(grey);//set background colour
         //--> CREATE, PLACE, AND INITIALIZE BUTTONS
@@ -278,9 +280,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
     }//end of init()
    
-    //PAINT METHOD - all Java applets require a paint method which is where thing are actually shown on the screen using Graphics object
     public void paint(Graphics g){
-       g.setFont(def);
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method paint is a required method by java applets
+    	//PARAMETER: Graphics g
+    	//This is where things are actually shown on the screen using Graphics object
+        //The method paint basically draws the entire board, and contains conditions that make it so that under different
+    	//circumstances it will draw different things, like a welcome message, board, or target game
+    	//----------------------------------------------------------------------------------------------------------------
+    	
+    	g.setFont(def);
        
         if(!zombieGame){//don't print any of this if we are currently playing the zombie game
            
@@ -525,8 +534,17 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
     }//end of graphics()
     
-    //actionPerformed method - a method that runs every time an action is performed (key press, click, etc) and the action is stored in ActionEvent e
     public void actionPerformed(ActionEvent e){
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method actionPerformed is a method that runs every time an action is performed (button press)
+    	//PARAMETER: ActionEvent e
+    	//and the action is stored in ActionEvent e
+    	//This method allows for interactivity with the user
+        //This method contains many if statements with e.getSource(), which means that the if statement will only run if
+    	//a certain button is pressed. Other if statements have other boolean conditions which means that I just want some
+    	//conditions to be checked/dealt with every time an action is performed
+    	//----------------------------------------------------------------------------------------------------------------
+    	
     	boolean moved = false;
     	if(lives <= 0){
     		objectiveMessage = "You have 0 lives, you died!";
@@ -848,14 +866,25 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         repaint();//repaints the entire board after all of our updates
     }//end of actionlistener method
    
-    //--> DICE ROLL METHOD
-    public static int roll(int min, int max){
+    public static int roll(int min, int max){        
+    	//----[METHOD]----------------------------------------------------------------------------------------------------
+        //This functional method roll generates a random number based on specified user minimum and maximum values
+    	//PARAMETER: int min, int max --> desired minimum and maximum values from the user
+    	//RETURN: the random number generated
+    	//This method allows for more convenient generation of random numbers
+    	//----------------------------------------------------------------------------------------------------------------
+    	
         return (int)Math.round((Math.random()*(max-min)) + min);//math equation to get random number between min and max
     }
    
-    //--> DESMOND MOVEMENT METHOD
     public void desWalk(boolean follow){
-        boolean validCommand = false;//set valid command to false
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method desWalk is a method that is called whenever the player moves
+    	//PARAMETER: boolean follow, a parameter that the method uses to dictate whether or not it should make desmond
+    	//follow the player or walk on his own
+    	//----------------------------------------------------------------------------------------------------------------
+    	
+        boolean validCommand = false;//set valid command to false so that do-while loop will run until valid command is entered
        
         if(follow){//if desmond is supposed to follow the player, set his coordinates to the player's coordinates and exit the method
             desX = playX;
@@ -914,9 +943,14 @@ public class SaveDesmond2 extends Applet implements ActionListener{
  
     }//end of desWalk method
    
-    //--> ZOMBIE MOVEMENT METHOD
     public void zombWalk(int zombnum){//parameter of zombnum as this method must be called multiple times, zombnum specifies the "index" of the zombie we are moving
-        boolean validCommand;//same purpose as desWalk method
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method zombWalk is a method that is called whenever the player moves
+    	//PARAMETER: int zombnum --> dictates which zombie the method is affecting
+    	//The method is meant to be run once for each zombie, in a loop, with zombnum incrementing
+    	//----------------------------------------------------------------------------------------------------------------
+    	
+    	boolean validCommand;//same purpose as desWalk method
        
         do{//same do-while loop as desWalk method
             int direction = roll(1, 6);//same idea as desWalk method
@@ -968,8 +1002,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
  
     }//end of zombWalk method
    
-    //--> START PRESSED METHOD
     public void startPressed(){//runs when start button is pressed
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method startPressed is a method that is called whenever the user presses start
+    	//The method is mainly just resetting variables, making sure that things that need to be visible are visible and vice versa
+    	//----------------------------------------------------------------------------------------------------------------
+    	
         zombNum = roll(14, 18);
         //--> RESETTING VARIABLES
         //reset lives to 3
@@ -1041,8 +1079,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
  
     }//end of startPressed method
    
-    //--> END GAME METHOD
     public void endGame(boolean won){//boolean won will run different code based on if it's true or false
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method endGame is a method that is called whenever the game ends:
+    	//		Player reaches home w/ Desmond
+    	//		Player lives reaches 0
+    	//		Player presses win or give up buttons
+    	//PARAMETER: boolean won, a parameter that the method uses to dictate whether or not you won and therefore if it should 
+    	//add your highscores
+    	//----------------------------------------------------------------------------------------------------------------
+    	
         boolean updated;
         if(won){//if we win
             //-- UPDATING LINKEDLISTS
@@ -1099,6 +1145,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     }//end of endGame method
    
     public int calcHighscore(int moveCount, long timePassedSeconds, int remainingLives){
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This functional method calcHighscore is a method that calculates the highscore given various statistics
+    	//PARAMETER: int moveCount, int remainingLives, long timePassedSeconds
+    	//RETURN: int calcHighscore --> calculated highscore
+    	//----------------------------------------------------------------------------------------------------------------
+    	
     	//--> HIGHSCORE FORMULA - highscore is a combined score that reflects the player's performance in move count, time taken, and remaining lives
     	//100/moves and 600/timePassed means that the lower they are, the higher the score will  be
     	//(0.5*lives) means that the more remaining lives, the higher the score will be
