@@ -126,7 +126,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Color darkGrey = new Color(105,105,105);
     static Color orange = new Color(252, 132, 3);
     static Color pink = new Color(245, 56, 226);
-    
+
     static boolean followStatus = false;
     static boolean showWelcome = true;
     static boolean zombieGame = false;
@@ -171,7 +171,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static String distanceMessage;
     static String objectiveMessage = "FIND DESMOND";
     static String cheatMessage = "";
-    static String zombFightMessage;//update method
+    static String zombFightMessage = "A zombie bit you... you must fight it now. Click it's weak points when they come up.";
     static LinkedList<String> highestMovesNames = new LinkedList<String>();
     static LinkedList<String> highTimesNames = new LinkedList<String>();
     static LinkedList<String> highFormattedTimes = new LinkedList<String>();
@@ -295,7 +295,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	
     	g.setFont(def);
        
-        if(!zombieGame){//don't print any of this if we are currently playing the zombie game
+        if(!zombieGame && !showWelcome){//don't print any of this if we are currently playing the zombie game
            
           //--> PRINT INITIAL BOARD AND BOXES
           //these rectangles are background "textboxes"
@@ -380,11 +380,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     g.fillOval((30*zombies[i][0])+boardX+3,(30*zombies[i][1])+boardY+3,24,24);//display each zombie based on their location
                 }          
             }
-                 
+     
+            g.setFont(def);
+            
             //--> DISPLAY POWERUPS
             if(heartSpawned){
             	g.setColor(red);
-
 
             	int [] x = {(heartPowerupX*30)+45, ((heartPowerupX*30)-(heartSizeX/2))+45, ((heartPowerupX*30)+(heartSizeX/2))+45};
             	int [] y = {(heartPowerupY*30)+55, ((heartPowerupY*30)-heartSizeY)+55, ((heartPowerupY*30)-heartSizeY)+55};
@@ -441,7 +442,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }
             g.setColor(black);
             g.drawString("Distance from Desmond: ", menuX, menuY+60);
-            
+
             if(distanceMessage.equals("You got Desmond!")){
             	g.setColor(lightGreen);
             }else if(distanceMessage.contains("Very hot!")){
@@ -530,7 +531,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }
            
             g.setColor(grey);
-            g.fillRect(0, 0, coverX, coverY);//display cover rectange, conditionally, this rectange will cover the entire screen OR it will be invisible
+            g.fillRect(0, 0, coverX, coverY);//display cover rectange, conditionally, this rectangle will cover the entire screen OR it will be invisible
         }
 
         //--> WELCOME BOX & MESSAGE
@@ -565,7 +566,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setFont(title);
             g.drawString(zombFightMessage, (WINDOWWIDTH/2)-850, 300);//print instructions
             g.setColor(lightGreen);
-            g.drawString("weak points", (WINDOWWIDTH/2)-100, 300);//print instructions
+            
+            if(!zombFightMessage.equals("")){
+                g.drawString("weak points", (WINDOWWIDTH/2)-140, 300);//print instructions
+            }
             g.setColor(white);
             g.setFont(time);
             g.drawString(displayZombieTime, (WINDOWWIDTH/2)-200, (WINDOWHEIGHT/2));
@@ -1305,13 +1309,13 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	//play the target game instead of the default game
     	//----------------------------------------------------------------------------------------------------------------
         zombieGame = true;//so that we will print zombie game section in the paint method
-        zombFightMessage = "A zombie bit you... you must fight it now. Click it's                       when they come up. Are you ready? You'll have " + ZOMBIETIMELIM + " seconds";//update method
-        zombieFightStart.setVisible(true);
+        zombFightMessage = "A zombie bit you... you must fight it now. Click it's                       when they come up. Are you ready? You'll have " + ZOMBIETIMELIM + " seconds";//update method        zombieFightStart.setVisible(true);
         startZombieTime = LocalTime.now();
         stopZombieTime = LocalTime.now();
         displayZombieTime = "";
         add(zombieFightStart);//add start fight button
         //make all gameplay buttons invisible
+        zombieFightStart.setVisible(true);
         up.setVisible(false);
         down.setVisible(false);
         left.setVisible(false);
