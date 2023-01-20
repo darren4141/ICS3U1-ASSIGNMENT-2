@@ -20,15 +20,8 @@ public class SaveDesmond {
     static LinkedList<Integer> highscores = new LinkedList<Integer>();
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static SaveDesmond SD = new SaveDesmond();
-    static File highscoresFile = new File("C:\\Users\\16473\\OneDrive\\Documents\\GitHub\\ICS3O1-ASSIGNMENT-2\\Highscores");
-    static FileWriter fw;
-    static BufferedWriter bw;
-    static BufferedReader bfr;
 
     public static void main(String[]args) throws IOException{
-        fw = new FileWriter(highscoresFile,true);
-        bfr = new BufferedReader(new FileReader(highscoresFile));
-        bw = new BufferedWriter(fw);
         player = "O";
         playX = 0;
         playY = 0;
@@ -449,10 +442,14 @@ public class SaveDesmond {
    
     public void endGame(boolean won, int moves) throws IOException{
         if(won){
+            File highscorefile = new File("C:\\Users\\16473\\OneDrive\\Documents\\GitHub\\ICS3O1-ASSIGNMENT-2\\Highscores");
+            FileWriter hfw = new FileWriter("C:\\Users\\16473\\OneDrive\\Documents\\GitHub\\ICS3O1-ASSIGNMENT-2\\Highscores")
+            Scanner hsc = new Scanner(highscoreFile);
+
             System.out.println("You won! You took " + moves + " steps!");
             highscoreNames.add(name);
             highscores.add(moves);
-            fw.write(name);
+            hfw.write(name) + ", ";
 
            
         }if(!won){
@@ -460,5 +457,6 @@ public class SaveDesmond {
         }
         main(null);
     }
+
  
 }
