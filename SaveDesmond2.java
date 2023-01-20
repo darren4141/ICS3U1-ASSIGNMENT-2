@@ -401,7 +401,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 //                    g.drawString(Integer.toString(gridStatus[j][i]), (30*j)+boardX,(30*i)+boardY+30);//output gridstatus
 //                }
 //            }
-           
+            
             g.setColor(black);
             //--> DISPLAY COORDINATE PLANE
             for(int i = 1; i < ROW+1; i++) {//iterate through the number of rows, starting from 1
