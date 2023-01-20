@@ -67,7 +67,7 @@
 //						moved - boolean variable that indicates whether or not the player has moved during a run of actionPerformed, used for selection (we may not want to run certain things if the player hasn't moved
 //						canMove - a boolean variable that indicates whether or not the player can make a valid move
 //						distance - an int variable that store the calculated distance between desmond and the player
-//
+//						modeSelected - boolean variable that indicates if the mode has been selected
 //	                 	FORMATTING STATIC VARIABLES - these variables are here so that the location of entire sections (leaderboard, game pad, board, etc) can be changed easily just by changing the static variable
 //	                      	playX, playY - int variables that store the location of the player
 //							desX, desY - int variables that store the location of desmond, randomly generated at the start of each game
@@ -120,6 +120,8 @@
 //	====================================================================================================================================================================================================================================================================
 
 
+
+
 //import statments
 import java.applet.Applet;
 import java.awt.*;
@@ -130,7 +132,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
  
 //start of class
-public class SaveDesmond2 extends Applet implements ActionListener{
+public class SaveDesmondApplet extends Applet implements ActionListener{
    
    
     //ALL VARIABLES EXPLAINED IN HEADER BLOCK
@@ -173,8 +175,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Color darkGrey = new Color(105,105,105);
     static Color orange = new Color(252, 132, 3);
     static Color pink = new Color(245, 56, 226);
-
-
+    static Color aqua = new Color(52, 235, 219);
+    
     //---> BOOLEANS
     static boolean followStatus = false;
     static boolean showWelcome = true;
@@ -184,12 +186,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static boolean zombVisible;
     static boolean heartSpawned = false;
     static boolean desmondMinigamefailed = false;
+    static boolean modeSelected = false;
     
     //--> IMPORTANT NUMBERS
     static int zombNum;
     static int lives = 3;
     static int moves;
-
 
     //--> MOVING OBJECT LOCATIONS
     static int playX = 0;
@@ -203,7 +205,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int [][] zombies = new int [18][2]; //zombies[i][0] = x zombies[i][1] = y
     static LinkedList<Integer> searchedX = new LinkedList<Integer>();
     static LinkedList<Integer> searchedY = new LinkedList<Integer>();
-
 
     //--> MISC
     static int [][] gridStatus = new int[ROW][COL]; //GRID STATUS
@@ -272,6 +273,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method init() is a required method by Java Applets and it runs every time you click run
         //This method initializes objects like buttons and textboxes as well as resizing the window width and height
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         resize(WINDOWWIDTH, WINDOWHEIGHT);//resize window size
         setBackground(grey);//set background colour
@@ -292,14 +295,21 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
         easy = new Button("Easy");
         easy.addActionListener(this);
+        
         medium = new Button("Medium");
         medium.addActionListener(this);
+        
         hard = new Button("Hard");
         hard.addActionListener(this);
-        easy.setBounds(PADX + 100, PADY-40, 100, 30);//location of the button are relative to static variables PADX and PADY, makes for easier adjustments
-        medium.setBounds(PADX + 210, PADY-40, 100, 30);
-        hard.setBounds(PADX + 320, PADY-40, 100, 30);
+        
+        easy.setBounds((WINDOWWIDTH/2)-400, (WINDOWHEIGHT/2)+200, 200, 50);//location of the button are relative to the screen so that they are centered
+        medium.setBounds(WINDOWWIDTH/2-170, (WINDOWHEIGHT/2)+200, 200, 50);
+        hard.setBounds((WINDOWWIDTH/2)+60, (WINDOWHEIGHT/2)+200, 200, 50);
  
+        easy.setBackground(lightGreen);
+        medium.setBackground(orange);
+        hard.setBackground(red);
+        
         up = new Button("^");
         up.addActionListener(this);
         up.setBounds(PADX, PADY-30, 30, 30);
@@ -359,11 +369,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	//This is where things are actually shown on the screen using Graphics object
         //The method paint draws the entire board, and contains conditions that make it so that under different
     	//circumstances it will draw different things, like a welcome message, board, or minigame
+    	//Parameters: object Graphics g
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
     	
     	g.setFont(def);//set font to default font
-       
-        if(!zombieGame && !showWelcome && !desmondEncounter){//don't print any of this if we are currently playing the zombie game, displaying the welcome message, or playing the desmond minigame
+    	g.setColor(black);
+    	g.drawString("Made and trademarked by Darren Liu, Jan 2023", WINDOWWIDTH-280, WINDOWHEIGHT-5);
+    	
+    	
+        if(!zombieGame && !showWelcome && !desmondEncounter && modeSelected){//don't print any of this if we are currently playing the zombie game, displaying the welcome message, or playing the desmond minigame
            
           //--> PRINT INITIAL BOARD AND BOXES
           //these rectangles are background "textboxes"
@@ -382,9 +397,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
           g.drawRect(BOARDX-1, (30*(COL+1))-1, (30*ROW)+1, 21);//<name>'s game DISPLAY BORDER
           g.drawRect(BOARDX-1, (30*(COL+1))+20, (20*ROW)+1, 31);//time and lives DISPLAY BORDER
           //drawRect method parameters: (x location of top left corner, y location of top left corner, width, height)
-
-
-
 
           g.setFont(menuBold);
           g.drawString(displayTime, BOARDX+10, (30*(COL+1)+42));//output that displays the current time taken
@@ -406,7 +418,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
               g.fillOval(heartX-(heartSizeX/2)+1, heartY-heartSizeY-(heartSizeY/4)-2, heartSizeX/2, heartSizeX/2);
               g.fillOval(heartX-1, heartY-heartSizeY-(heartSizeY/4)-2, heartSizeX/2, heartSizeX/2);
            }
-     
            
            //--> PRINT GAME BOARD
            g.setColor(black);
@@ -459,7 +470,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             if(heartSpawned){//if the heart power up has been spawned
             	g.setColor(red);
 
-
             	int [] x = {(heartPowerupX*30)+45, ((heartPowerupX*30)-(heartSizeX/2))+45, ((heartPowerupX*30)+(heartSizeX/2))+45};//calculate the points of the heart using the heart location and size
             	int [] y = {(heartPowerupY*30)+55, ((heartPowerupY*30)-heartSizeY)+55, ((heartPowerupY*30)-heartSizeY)+55};
             	 
@@ -475,7 +485,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             	g.drawString("H", BOARDX+5, BOARDY+25);//print out the home symbol on (1,1)
             }
             
-            //--> FOR ERRORCHECKING
+            //--> FOR ERRORCHECKING PRINT GRIDSTATUS
 //          g.setFont(def);
 //          g.setColor(red);
 //          for(int i = 0; i < ROW; i++){//iterate through rows
@@ -517,7 +527,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(black);
             g.drawString("Distance from Desmond: ", MENUX, MENUY+60);
 
-
             //--> TEMPERATURE MENU
             //display text in different colours based on how close player is to desmond
             if(distanceMessage.equals("You got Desmond!")){
@@ -546,7 +555,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }else{
                 g.drawString("Heart location: not spawned", MENUX, MENUY+150);
             }
-
 
             g.setColor(black);
             g.setFont(title);
@@ -577,7 +585,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.drawString("DESMOND", MENUX + 40, MENUY + LEGENDY+50);
             g.drawString("ZOMBIE", MENUX + 40, MENUY + LEGENDY+80);
            
-           
             //--> DISPLAY LEADERBOARD
             g.setFont(subheader);
             g.drawString("Overall Scores:", MENUX + HIGHSCOREX, MENUY + HIGHSCOREY + 20);
@@ -590,27 +597,23 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             for(int i = 0; i < highscores.size(); i++){//iterate through all highscoreMoves
                 g.drawString(highnames.get(i), MENUX + HIGHSCOREX, MENUY+((i+2)*20) + HIGHSCOREY);//print corresponding names
                 g.drawString(highscores.get(i) + " ", MENUX + HIGHSCOREX + 150, MENUY+((i+2)*20) + HIGHSCOREY);//print lowest moves
-     
             }
             
             sortHighscores();
             for(int i = 0; i < highscoreMoves.size(); i++){//iterate through all highscoreMoves
                 g.drawString(highestMovesNames.get(i), MENUX + HIGHSCOREX + 200, MENUY+((i+2)*20)+HIGHSCOREY);//print corresponding names
                 g.drawString(highscoreMoves.get(i) + " ", MENUX + HIGHSCOREX + 350, MENUY+((i+2)*20)+HIGHSCOREY);//print lowest moves
-     
             }
            
             sortTimes();//sort the times
             for(int i = 0; i < highTimes.size(); i++){//iterate through all the times
                 g.drawString(highTimesNames.get(i) + " ", MENUX + HIGHSCOREX + 400, MENUY+((i+2)*20)+HIGHSCOREY);//print corresponding names
                 g.drawString(highFormattedTimes.get(i), MENUX + HIGHSCOREX + 550, MENUY+((i+2)*20)+HIGHSCOREY);//print formatted times
-     
             }
            
             g.setColor(grey);
             g.fillRect(0, 0, coverX, coverY);//display cover rectangle, conditionally, this rectangle will cover the entire screen OR it will be invisible
         }
-
 
         //--> WELCOME BOX & MESSAGE
         if(showWelcome){//only run this code if we want to show the welcome message
@@ -631,7 +634,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(black);
             g.drawString(welcomeMessage[2], WELCOMEX, WELCOMEY-90);
             g.drawString(welcomeMessage[3], WELCOMEX, WELCOMEY-60);
-
 
             //--> WELCOME MESSAGE
             g.setFont(welcome);
@@ -675,7 +677,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(white);
             g.setFont(title);
             g.drawString(desmondGameMessage, (WINDOWWIDTH/2)-850, 300);//print instructions
-            g.setColor(grey);
+            g.setColor(aqua);
             
             if(!desmondGameMessage.equals("")){//if desmond game message is not empty
                 g.drawString("the buttons", (WINDOWWIDTH/2)+395, 300);//print alternate coloured text
@@ -696,6 +698,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //This method contains many if statements with e.getSource(), which means that the if statement will only run if
     	//a certain button is pressed. Other if statements have other boolean conditions which means that I just want some
     	//conditions to be checked/dealt with every time an action is performed
+    	//Parameters: ActionEvent e
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
     	
     	boolean moved = false;//declare moved and set it to false
@@ -729,7 +733,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         if(e.getSource() == start){//if start button is pressed
             startPressed();//run startPressed method
         }
-       
+    	
         //--> MOVEMENT CONDITIONS
         if(e.getSource() == up){
         	boolean canMove = true;
@@ -758,8 +762,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     playY++;
                     moved = true;
                 }
-
-
             }
         }
        
@@ -848,13 +850,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                 }
             }
            
-           
             for(int i = 0; i < zombNum; i++){//iterate through all zombies
                 zombWalk(i);//zombie will move randomly
             }
            
         }
-       
        
         //--> DIFFICULTY BUTTONS
         if(e.getSource() == easy) {
@@ -872,6 +872,15 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             zombVisible = false;
         }
        
+        if(e.getSource() == easy || e.getSource() == medium || e.getSource() == hard){//if any difficulty button is clicked
+        	//hide them all
+        	modeSelected = true;
+        	easy.setVisible(false);
+        	medium.setVisible(false);
+        	hard.setVisible(false);
+        	begin();
+        	
+        }
        
         //--> INTERACTIONS
         
@@ -1047,15 +1056,13 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	        	}else {
 	        		takeZombieDamage(false);//end zombie fight and take no damage
 	        	}
-
-
 	        }
     	}
     	
     	//--> DESMOND MINIGAME START
         if(e.getSource() == desmondGameStart){//if we press desmond fight start button
             for(int i = 0; i < targets.length; i++){//add all targets, set them to visible
-            	targets[i].setBackground(grey);//set target background colours
+            	targets[i].setBackground(aqua);//set target background colours
             	targets[i].setLabel(Integer.toString(i));//label targets with their number
                 add(targets[i]);//add targets
                 targets[i].setVisible(true);//make targetse visible
@@ -1071,7 +1078,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	}
     	
         repaint();//repaints the entire board after all of our updates
-    }//end of actionlistener method
+    }//end of ActionListener method
    
     public static int roll(int min, int max){
     	//----[METHOD]----------------------------------------------------------------------------------------------------
@@ -1088,6 +1095,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method desWalk is a method that is called whenever the player moves
     	//PARAMETER: boolean follow, a parameter that the method uses to dictate whether or not it should make desmond
+    	//Returns: void
     	//follow the player or walk on his own
     	//----------------------------------------------------------------------------------------------------------------
     	
@@ -1154,6 +1162,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method zombWalk is a method that is called whenever the player moves
     	//PARAMETER: int zombnum --> dictates which zombie the method is affecting
+    	//Returns: void
     	//The method is meant to be run once for each zombie, in a loop, with zombnum incrementing
     	//----------------------------------------------------------------------------------------------------------------
     	
@@ -1209,29 +1218,28 @@ public class SaveDesmond2 extends Applet implements ActionListener{
  
     }//end of zombWalk method
    
-    public void startPressed(){//runs when start button is pressed
+    public void startPressed(){//runs when start is pressed
         //----[METHOD]----------------------------------------------------------------------------------------------------
-        //This procedural method startPressed is a method that is called whenever the user presses start
-    	//The method is mainly just resetting variables, making sure that things that need to be visible are visible and vice versa
+        //This procedural method startPressed is a method that is called whenever the user presses the start button
+    	//The method is mainly just resetting variables, making sure that things that need to be visible are visible, especially the difficulty selection buttons
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
-    	
-        zombNum = roll(14, 18);//randomly roll the number of zombies
-        objectiveMessage = "SELECT A DIFFICULTY";//update message
+        add(easy);
+        add(medium);
+        add(hard);
+        easy.setVisible(true);
+        medium.setVisible(true);
+        hard.setVisible(true);
         
-        //--> RESETTING VARIABLES
-        //reset lives to 3
-        lives = 3;
-        coverX = 0; coverY = 0;//make the cover "invisible"
-        showWelcome = false;//hide the welcome message
-        heartSpawned = false;//despawn heart
-        
-        for(int i = 0; i < gridStatus.length; i++){//iterate through entire gridStatus array 
-        	for(int j = 0; j < gridStatus.length; j++){
-        		gridStatus[i][j] = 0;//set everything to 0
-        	}
-        }
-        
-        startTime = LocalTime.now();//set start time
+        up.setVisible(false);
+        down.setVisible(false);
+        left.setVisible(false);
+        right.setVisible(false);
+        win.setVisible(false);
+        cheat.setVisible(false);
+        giveUp.setVisible(false);
+
         name = nameInput.getText();//set name to whatever is in the textField
         name = name.toUpperCase();//change name to uppercase
        
@@ -1243,7 +1251,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         playY = 0;
         moves = 0;
         followStatus = false;
- 
+        showWelcome = false;//hide the welcome message
+
         desX = roll(ROW-3, ROW-1);//reroll desmond location (desmond can only spawn near the bottom right)
         desY = roll(COL-3, COL-1);
         
@@ -1259,6 +1268,30 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //CLEAR MOVE HISTORY
         searchedX.clear();
         searchedY.clear();
+        zombNum = roll(14, 18);//randomly roll the number of zombies
+        objectiveMessage = "SELECT A DIFFICULTY";//update message
+    }
+    
+    public void begin(){//runs when difficulty is selected
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method begin is a method that is called whenever the user selects a difficulty
+    	//The method is mainly just resetting variables, making sure that things that need to be visible are visible
+    	//Parameters: void
+    	//Returns: void
+    	//----------------------------------------------------------------------------------------------------------------
+        //--> RESETTING VARIABLES
+        //reset lives to 3
+        lives = 3;
+        coverX = 0; coverY = 0;//make the cover "invisible"
+        heartSpawned = false;//despawn heart
+        
+        for(int i = 0; i < gridStatus.length; i++){//iterate through entire gridStatus array 
+        	for(int j = 0; j < gridStatus.length; j++){
+        		gridStatus[i][j] = 0;//set everything to 0
+        	}
+        }
+        
+        startTime = LocalTime.now();//set start time
         
         //ADD BUTTONS
         add(up);
@@ -1268,12 +1301,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         add(win);
         add(cheat);
         add(giveUp);
-        add(easy);
-        add(medium);
-        add(hard);
         add(cont);
        
         cont.setVisible(false);//hide continue button
+        
         //show all 'gameplay' buttons
         up.setVisible(true);
         down.setVisible(true);
@@ -1282,9 +1313,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         win.setVisible(true);
         cheat.setVisible(true);
         giveUp.setVisible(true);
-        easy.setVisible(true);
-        medium.setVisible(true);
-        hard.setVisible(true);
+        
+        //hide difficulty buttons
+        easy.setVisible(false);
+        medium.setVisible(false);
+        hard.setVisible(false);
  
     }//end of startPressed method
    
@@ -1296,6 +1329,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	//		Player presses win or give up buttons
     	//PARAMETER: boolean won, a parameter that the method uses to dictate whether or not you won and therefore if it should 
     	//add your highscores
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
     	
         boolean updated;
@@ -1336,6 +1370,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             
         }
        
+        //modeSelected = false;
         //show continue button
         cont.setVisible(true);
        
@@ -1363,21 +1398,27 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	//--> HIGHSCORE FORMULA - highscore is a combined score that reflects the player's performance in move count, time taken, and remaining lives
     	//100/moves and 600/timePassed means that the lower they are, the higher the score will  be
     	//(0.5*lives) means that the more remaining lives, the higher the score will be
-    	return (int) (((100/moveCount) + (600/timePassedSeconds) + 1000)+(250*remainingLives));
+    	int score;
+    	if(moves != 0){
+    		score = (int) (((100/moveCount) + (600/timePassedSeconds) + 1000)+(250*remainingLives));
+    	}else{
+    		score = (int) ((100 + (600/timePassedSeconds) + 1000)+(250*remainingLives));
+    	}
+    	
+    	
+    	return score;
     }
     
     public void sorthighscoreMoves(){//sort from smallest (i == 0) to largest (i == highscoreMoves.size())
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method sorthighscoreMoves is a method that sorts the lowest moves and their respective names with bubble sort
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
-
-
         //declare temporary score and name for swapping
         int tempScore;
         String tempName;
         boolean sorted = false;
-
-
         while(!sorted){//while it has not been sorted
             sorted = true; //if we get through the entire for loop below without triggering the if statement, that means our LinkedList is sorted and we can move on
             for(int i = 0; i < highscoreMoves.size()-1; i++){//iterate through highscoreMoves except for the last one
@@ -1403,6 +1444,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     public void sortTimes(){//sort from smallest (i == 0) to largest (i == highTimes.size())
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method sortTimes is a method that sorts the lowest moves and their respective names with bubble sort
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         //temporary variables for swapping
         long tempScore;
@@ -1436,6 +1479,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     public void sortHighscores(){//sort from largest (i == 0) to smallest (i == highscores.size())
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method sortHighscores is a method that sorts the lowest moves and their respective names with bubble sort
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         //declare temporary score and name for swapping
         int tempScore;
@@ -1469,6 +1514,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //This procedural method desmondEncounter is a method that starts the desmond encounter minigame
     	//The function sets boolean zombieGame to true which will trigger the paint and actionPerformed method to
     	//play the target game instead of the default game
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         desmondEncounter = true;//so that we will print zombie game section in the paint method
         desmondGameMessage = "You have encountered DESMOND. DESMOND would like to test your intelligence. Click                      in ascending order";//update method
@@ -1487,23 +1534,23 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         medium.setVisible(false);
         hard.setVisible(false);
         repaint();//refresh screen
-       
     }
     
     public void endDesmondEncounter(boolean loseLife){
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method endDesmondEncounter will run when the user loses the desmond minigame
     	//PARAMETER: loseLife --> method will remove a life if loseLife is true
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         desmondEncounter = false;//end zombie game
         
         if(loseLife) {
-        	objectiveMessage = name + ", you proved to be too stupid and DESMOND took one of your lives!";
+        	objectiveMessage = name + ", you proved to be remarkably unintelligent and DESMOND took one of your lives!";
         	lives--;//decrease the number of lives      	
         }else {
         	objectiveMessage = "Good job " + name + ", You proved your worth!";
             desVisible = true;//we can see desmond
-            objectiveMessage = "RETURN DESMOND TO HOME (1, 1)";//update objective message
+            objectiveMessage = "Return DESMOND to home! <H>";//update objective message
             followStatus = true;//desmond will now follow the player
         }
 		
@@ -1515,11 +1562,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         win.setVisible(true);
         cheat.setVisible(true);
         giveUp.setVisible(true);
-        easy.setVisible(true);
-        medium.setVisible(true);
-        hard.setVisible(true);
-        desmondGameStart.setVisible(false);
 
+        desmondGameStart.setVisible(false);
 
         for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
             targetPressed[i] = false;
@@ -1537,6 +1581,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //This procedural method zombieFight is a method that starts the zombie target fight minigame
     	//The function sets boolean zombieGame to true which will trigger the paint and actionPerformed method to
     	//play the target game instead of the default game
+    	//Parameters: void
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         zombieGame = true;//so that we will print zombie game section in the paint method
         zombFightMessage = "A zombie bit you... you must fight it now. Click it's                       when they come up. Are you ready? You'll have " + ZOMBIETIMELIM + " seconds";//update method        zombieFightStart.setVisible(true);
@@ -1564,6 +1610,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method takeZombieDamage will run when the user loses the zombie minigame
     	//PARAMETER: loseLife --> method will remove a life if loseLife is true
+    	//Returns: void
     	//----------------------------------------------------------------------------------------------------------------
         zombieGame = false;//end zombie game
         
@@ -1582,11 +1629,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         win.setVisible(true);
         cheat.setVisible(true);
         giveUp.setVisible(true);
-        easy.setVisible(true);
-        medium.setVisible(true);
-        hard.setVisible(true);
         zombieFightStart.setVisible(false);
-
 
         for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
             targetPressed[i] = false;
@@ -1598,6 +1641,5 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     		endGame(false);//end the game, with a loss
 		}
     }
-
 
 }//end of class
