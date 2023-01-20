@@ -119,6 +119,7 @@
 //
 //	====================================================================================================================================================================================================================================================================
 
+
 //import statments
 import java.applet.Applet;
 import java.awt.*;
@@ -173,6 +174,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Color orange = new Color(252, 132, 3);
     static Color pink = new Color(245, 56, 226);
 
+
     //---> BOOLEANS
     static boolean followStatus = false;
     static boolean showWelcome = true;
@@ -188,6 +190,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int lives = 3;
     static int moves;
 
+
     //--> MOVING OBJECT LOCATIONS
     static int playX = 0;
     static int playY = 0;
@@ -200,6 +203,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int [][] zombies = new int [18][2]; //zombies[i][0] = x zombies[i][1] = y
     static LinkedList<Integer> searchedX = new LinkedList<Integer>();
     static LinkedList<Integer> searchedY = new LinkedList<Integer>();
+
 
     //--> MISC
     static int [][] gridStatus = new int[ROW][COL]; //GRID STATUS
@@ -380,6 +384,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
           //drawRect method parameters: (x location of top left corner, y location of top left corner, width, height)
 
 
+
+
           g.setFont(menuBold);
           g.drawString(displayTime, BOARDX+10, (30*(COL+1)+42));//output that displays the current time taken
           g.drawString("MOVES: " + moves, BOARDX+220, (30*(COL+1)+42));
@@ -453,6 +459,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             if(heartSpawned){//if the heart power up has been spawned
             	g.setColor(red);
 
+
             	int [] x = {(heartPowerupX*30)+45, ((heartPowerupX*30)-(heartSizeX/2))+45, ((heartPowerupX*30)+(heartSizeX/2))+45};//calculate the points of the heart using the heart location and size
             	int [] y = {(heartPowerupY*30)+55, ((heartPowerupY*30)-heartSizeY)+55, ((heartPowerupY*30)-heartSizeY)+55};
             	 
@@ -510,6 +517,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(black);
             g.drawString("Distance from Desmond: ", MENUX, MENUY+60);
 
+
             //--> TEMPERATURE MENU
             //display text in different colours based on how close player is to desmond
             if(distanceMessage.equals("You got Desmond!")){
@@ -538,6 +546,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             }else{
                 g.drawString("Heart location: not spawned", MENUX, MENUY+150);
             }
+
 
             g.setColor(black);
             g.setFont(title);
@@ -602,6 +611,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.fillRect(0, 0, coverX, coverY);//display cover rectangle, conditionally, this rectangle will cover the entire screen OR it will be invisible
         }
 
+
         //--> WELCOME BOX & MESSAGE
         if(showWelcome){//only run this code if we want to show the welcome message
             g.setColor(lightGrey);
@@ -621,6 +631,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.setColor(black);
             g.drawString(welcomeMessage[2], WELCOMEX, WELCOMEY-90);
             g.drawString(welcomeMessage[3], WELCOMEX, WELCOMEY-60);
+
 
             //--> WELCOME MESSAGE
             g.setFont(welcome);
@@ -747,6 +758,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     playY++;
                     moved = true;
                 }
+
 
             }
         }
@@ -1035,6 +1047,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	        	}else {
 	        		takeZombieDamage(false);//end zombie fight and take no damage
 	        	}
+
 
 	        }
     	}
@@ -1358,10 +1371,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //This procedural method sorthighscoreMoves is a method that sorts the lowest moves and their respective names with bubble sort
     	//----------------------------------------------------------------------------------------------------------------
 
+
         //declare temporary score and name for swapping
         int tempScore;
         String tempName;
         boolean sorted = false;
+
 
         while(!sorted){//while it has not been sorted
             sorted = true; //if we get through the entire for loop below without triggering the if statement, that means our LinkedList is sorted and we can move on
@@ -1505,6 +1520,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         hard.setVisible(true);
         desmondGameStart.setVisible(false);
 
+
         for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
             targetPressed[i] = false;
             targets[i].setVisible(false);//make target invisible
@@ -1571,6 +1587,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         hard.setVisible(true);
         zombieFightStart.setVisible(false);
 
+
         for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
             targetPressed[i] = false;
             targets[i].setVisible(false);//make target invisible
@@ -1582,4 +1599,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 		}
     }
 
+
 }//end of class
+
+
+
+
