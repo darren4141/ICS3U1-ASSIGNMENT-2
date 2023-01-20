@@ -701,7 +701,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	boolean moved = false;//declare moved and set it to false
     	
     	if(lives <= 0){//if player has 0 lives
-    		objectiveMessage = "You have 0 lives, you died!";//update message
+    		objectiveMessage = name + "you have 0 lives, you died!";//update message
     		endGame(false);//end the game without winning
     	}else if(playX != desX || playY != desY){//if player hasn't found desmond
     		objectiveMessage = "Find Desmond!";//update message
@@ -817,7 +817,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                
         //--> IF MENU BUTTONS ARE PRESSED
         if(e.getSource() == win){
-            objectiveMessage = "YOU WON IN " + moves + " MOVES";//update message
+            objectiveMessage = name + ",YOU WON IN " + moves + " MOVES";//update message
             endGame(true);//run the endGame method with true, meaning the game counts it as a win
         }
        
@@ -900,7 +900,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         
         //--> PLAYER & ZOMBIE
         if(gridStatus[playX][playY] == 2){//if player is on a tile with a zombie
-            objectiveMessage = "A ZOMBIE ATE YOU!";//update message
+            objectiveMessage = name + ", A ZOMBIE ATE YOU!";//update message
            
             //moves the player out of their spot with the zombie and makes sure they don't go out of bounds or to another zombie
             if(playX != 0 && gridStatus[playX-1][playY] != 2){//if player isn't stepping on a zombie
@@ -966,7 +966,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //--> WIN
         if(followStatus && playX == 0 && playY == 0 && e.getSource() != cont){//if desmond is following the player and they reach home
         	if(e.getSource() == up || e.getSource() == down || e.getSource() == left || e.getSource() == right){//only run this once since this if statement is on ActionPerformed
-                objectiveMessage = "YOU WON IN " + moves + " MOVES";//update message
+                objectiveMessage = name + ", YOU WON IN " + moves + " MOVES";//update message
                 endGame(true);//we win        		
         	}
         }
@@ -1498,10 +1498,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         desmondEncounter = false;//end zombie game
         
         if(loseLife) {
-        	objectiveMessage = "You proved to be too stupid and DESMOND took one of your lives!";
+        	objectiveMessage = name + ", you proved to be too stupid and DESMOND took one of your lives!";
         	lives--;//decrease the number of lives      	
         }else {
-        	objectiveMessage = "You proved your worth!";
+        	objectiveMessage = "Good job " + name + ", You proved your worth!";
             desVisible = true;//we can see desmond
             objectiveMessage = "RETURN DESMOND TO HOME (1, 1)";//update objective message
             followStatus = true;//desmond will now follow the player
@@ -1527,7 +1527,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
         
 		if(lives <= 0) {//if the lives reaches 0
-    		objectiveMessage = "You have 0 lives, you died!";
+    		objectiveMessage = name + ", you have 0 lives, you died!";
     		endGame(false);//end the game, with a loss
 		}
     }
@@ -1568,10 +1568,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         zombieGame = false;//end zombie game
         
         if(loseLife) {
-        	objectiveMessage = "You took too long to kill the zombie and lost a life!";
+        	objectiveMessage = name + ", you took too long to kill the zombie and lost a life!";
         	lives--;//decrease the number of lives      	
         }else {
-        	objectiveMessage = "You narrowly escaped!";
+        	objectiveMessage = "You narrowly escaped, " + name + "!";
         }
 		
         //make all of the buttons visible again
@@ -1594,7 +1594,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         }
         
 		if(lives <= 0) {//if the lives reaches 0
-    		objectiveMessage = "You have 0 lives, you died!";
+    		objectiveMessage = name + ",you have 0 lives, you died!";
     		endGame(false);//end the game, with a loss
 		}
     }
