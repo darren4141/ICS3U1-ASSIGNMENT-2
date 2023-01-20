@@ -201,8 +201,18 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static Font nameBold = new Font("Arial", Font.BOLD, 15);
     static Font welcome = new Font("Arial", Font.BOLD, 30);
     static Font time = new Font("Roboto", Font.BOLD, 40);
-    static String [] story = {};
-    static String [] welcomeMessage= {"Welcome to SAVE DESMOND!", "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", "EASY: Desmond and zombies visible (most enjoyable)", "MEDIUM: Zombies visible, Desmond invisible", "HARD: Zombies and Desmond invisible", "Please enter your NAME and press <START>", "Highscores are calculated using moves, times, and remaining lives"};
+    static String [] welcomeMessage = {"The year is 2050, a biological war has caused an infectious disease to infest the land. You are a lone survivor of a zombie apocalypse.", 
+    "The future of humanity, a sentient being named                   is in danger.                   contains all memories of every human who has ever lived.",
+    "You must navigate a dark expanse infested with the diseased. You are the last hope to preserve the will of humanity.",
+    "Your task is to retrieve                   and bring them back to your base to reboot the spirit of the people.",
+    "Welcome to SAVE DESMOND!", 
+    "In this game you will move your character using provided buttons to find and return Desmond home whilst avoiding zombies!", 
+    "EASY: Desmond and zombies visible (most enjoyable)", 
+    "MEDIUM: Zombies visible, Desmond invisible", 
+    "HARD: Zombies and Desmond invisible", 
+    "Please enter your NAME and press <START>", 
+    "Highscores are calculated using moves, times, and remaining lives",
+    "DESMOND"};
  
     public void init(){
         //----[METHOD]----------------------------------------------------------------------------------------------------
@@ -537,25 +547,38 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //--> WELCOME BOX & MESSAGE
         if(showWelcome){//only run this code if we want to show the welcome message
             g.setColor(lightGrey);
-            g.fillRect(welcomeX-5, welcomeY-welcomeBackgroundY+5, welcomeBackgroundX, ((welcomeBackgroundY+1)*welcomeMessage.length));//print message background based on how many rows of welcome message there are
+            g.fillRect(welcomeX-5, welcomeY-welcomeBackgroundY-145, welcomeBackgroundX, ((welcomeBackgroundY+1)*welcomeMessage.length));//print message background based on how many rows of welcome message there are
  
             g.setColor(black);
-            g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY+4, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1); //message border with the same idea as above
+            g.drawRect(welcomeX-6, welcomeY-welcomeBackgroundY-146, welcomeBackgroundX+1, ((welcomeBackgroundY+1)*welcomeMessage.length)+1); //message border with the same idea as above
            
             //print the welcome message
+            g.setFont(menuBold);
+            g.drawString(welcomeMessage[0], welcomeX, welcomeY-150);
+            g.drawString(welcomeMessage[1], welcomeX, welcomeY-120);
+            g.setColor(blue);
+            g.drawString(welcomeMessage[11], welcomeX+455, welcomeY-120);
+            g.drawString(welcomeMessage[11], welcomeX+685, welcomeY-120);
+            g.drawString(welcomeMessage[11], welcomeX+225, welcomeY-60);
+            g.setColor(black);
+            g.drawString(welcomeMessage[2], welcomeX, welcomeY-90);
+            g.drawString(welcomeMessage[3], welcomeX, welcomeY-60);
+
             g.setFont(welcome);
-            g.drawString(welcomeMessage[0], welcomeX, welcomeY);
-            g.setColor(darkGrey);
-            g.drawString(welcomeMessage[1], welcomeX, welcomeY+40);
+            g.setColor(blue);
+            g.drawString(welcomeMessage[4], welcomeX, welcomeY);
+            g.setColor(black);
+            g.drawString(welcomeMessage[5], welcomeX, welcomeY+40);
+            g.drawString(welcomeMessage[6], welcomeX, welcomeY+80);
             g.setColor(lightGreen);
-            g.drawString(welcomeMessage[2], welcomeX, welcomeY+80);
+            g.drawString(welcomeMessage[7], welcomeX, welcomeY+120);
             g.setColor(orange);
-            g.drawString(welcomeMessage[3], welcomeX, welcomeY+120);
+            g.drawString(welcomeMessage[8], welcomeX, welcomeY+160);
             g.setColor(red);
-            g.drawString(welcomeMessage[4], welcomeX, welcomeY+160);
-            g.setColor(darkGrey);
-            g.drawString(welcomeMessage[5], welcomeX, welcomeY+200);     
-            g.drawString(welcomeMessage[6], welcomeX, welcomeY+240);
+            g.drawString(welcomeMessage[9], welcomeX, welcomeY+200);
+            g.setColor(black);
+            g.drawString(welcomeMessage[10], welcomeX, welcomeY+240);     
+            //g.drawString(welcomeMessage[11], welcomeX, welcomeY+280);
         }
        
         //--> ZOMBIE GAME
