@@ -130,9 +130,11 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static boolean followStatus = false;
     static boolean showWelcome = true;
     static boolean zombieGame = false;
+    static boolean desmondEncounter = false;
     static boolean desVisible;
     static boolean zombVisible;
     static boolean heartSpawned = false;
+    static boolean desmondMinigamefailed = false;
     static int zombNum;
     static int lives = 3;
     static int playX = 0;
@@ -149,6 +151,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static int heartPowerupX;
     static int heartPowerupY;
     static int highscoreX = 600;
+    static int highscoreY = 40;
     static int coverX = WINDOWWIDTH;
     static int coverY = WINDOWHEIGHT;
     static int welcomeX = (WINDOWWIDTH/2)-900;
@@ -172,6 +175,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     static String objectiveMessage = "FIND DESMOND";
     static String cheatMessage = "";
     static String zombFightMessage = "A zombie bit you... you must fight it now. Click it's weak points when they come up.";
+    static String desmondGameMessage = "desmond game message default";
     static LinkedList<String> highestMovesNames = new LinkedList<String>();
     static LinkedList<String> highTimesNames = new LinkedList<String>();
     static LinkedList<String> highFormattedTimes = new LinkedList<String>();
@@ -187,7 +191,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     Button up, down, left, right;
     Button easy, medium, hard;
     Button win, cheat, giveUp;
-    Button zombieFightStart;
+    Button zombieFightStart, desmondGameStart;
     static TextField nameInput;
    
     static Font title = new Font("Roboto", Font.BOLD, 30);
@@ -282,6 +286,9 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         zombieFightStart.addActionListener(this);
         zombieFightStart.setBounds((WINDOWWIDTH/2)-75, 350, 150, 50);
        
+        desmondGameStart = new Button("GO!");
+        desmondGameStart.addActionListener(this);
+        desmondGameStart.setBounds((WINDOWWIDTH/2)-75, 350, 150, 50);
         // lines 184-242 is repetitive button initializing
        
         for(int i = 0; i < 5; i++){//initialize all 5 target buttons
@@ -305,12 +312,12 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     	
     	g.setFont(def);
        
-        if(!zombieGame && !showWelcome){//don't print any of this if we are currently playing the zombie game
+        if(!zombieGame && !showWelcome && !desmondEncounter){//don't print any of this if we are currently playing the zombie game
            
           //--> PRINT INITIAL BOARD AND BOXES
           //these rectangles are background "textboxes"
           g.setColor(lightGrey);
-          g.fillRect(menuX + highscoreX-5, menuY-15, 600, 20*(highscoreMoves.size()+2));//leaderboard rectangle's size is based on amount of values in the LinkedList
+          g.fillRect(menuX + highscoreX-5, menuY-15+highscoreY, 600, 20*(highscoreMoves.size()+2));//leaderboard rectangle's size is based on amount of values in the LinkedList
           g.fillRect(boardX, (30*(COL+1)), (30*ROW), 20);//<name>'s game DISPLAY BOX
           g.fillRect(boardX, (30*(COL+1))+21, (20*ROW), 30);//time and lives DISPLAY BOX
           //fillRect method parameters: (x location of top left corner, y location of top left corner, width, height)
@@ -319,7 +326,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
           //these rectanges are the borders to the above textboxes, their dimensions start 1 pixel before the textboxes and extend 1 extra pixel horizontally and vertically
           g.setColor(black);
           g.drawRect(boardX-1, boardY-1, (30*ROW)+1, (30*COL)+1);
-          g.drawRect(menuX + highscoreX-6, menuY-16, 601, 20*(highscoreMoves.size()+2)+1);//highscore display border
+          g.drawRect(menuX + highscoreX-6, menuY-16+highscoreY, 601, 20*(highscoreMoves.size()+2)+1);//highscore display border
           
           g.drawRect(boardX-1, (30*(COL+1))-1, (30*ROW)+1, 21);//<name>'s game DISPLAY BORDER
           g.drawRect(boardX-1, (30*(COL+1))+20, (20*ROW)+1, 31);//time and lives DISPLAY BORDER
@@ -486,7 +493,7 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             g.drawString(cheatMessage, menuX, menuY+210);
             
             g.setFont(header);
-            g.drawString("HIGHSCORES:", menuX + highscoreX, menuY);
+            g.drawString("HIGHSCORES:", menuX + highscoreX, menuY + highscoreY);
             //these variables are all meant to be updated periodically as the game is player
            
             //--> DISPLAY LEGEND
@@ -513,30 +520,30 @@ public class SaveDesmond2 extends Applet implements ActionListener{
            
            //--> DISPLAY LEADERBOARD
             g.setFont(subheader);
-            g.drawString("Overall Scores:", menuX + highscoreX, menuY + 20);
-            g.drawString("Lowest Moves:", menuX + highscoreX + 200, menuY+20);
-            g.drawString("Lowest Times:", menuX + highscoreX + 400, menuY+20);
+            g.drawString("Overall Scores:", menuX + highscoreX, menuY + highscoreY + 20);
+            g.drawString("Lowest Moves:", menuX + highscoreX + 200, menuY + highscoreY + 20);
+            g.drawString("Lowest Times:", menuX + highscoreX + 400, menuY + highscoreY + 20);
      
             sorthighscoreMoves();//sort the highscoreMoves
             g.setFont(def);
             
             for(int i = 0; i < highscores.size(); i++){//iterate through all highscoreMoves
-                g.drawString(highnames.get(i), menuX + highscoreX, menuY+((i+2)*20));//print corresponding names
-                g.drawString(highscores.get(i) + " ", menuX + highscoreX + 150, menuY+((i+2)*20));//print lowest moves
+                g.drawString(highnames.get(i), menuX + highscoreX, menuY+((i+2)*20) + highscoreY);//print corresponding names
+                g.drawString(highscores.get(i) + " ", menuX + highscoreX + 150, menuY+((i+2)*20) + highscoreY);//print lowest moves
      
             }
             
             sortHighscores();
             for(int i = 0; i < highscoreMoves.size(); i++){//iterate through all highscoreMoves
-                g.drawString(highestMovesNames.get(i), menuX + highscoreX + 200, menuY+((i+2)*20));//print corresponding names
-                g.drawString(highscoreMoves.get(i) + " ", menuX + highscoreX + 350, menuY+((i+2)*20));//print lowest moves
+                g.drawString(highestMovesNames.get(i), menuX + highscoreX + 200, menuY+((i+2)*20)+highscoreY);//print corresponding names
+                g.drawString(highscoreMoves.get(i) + " ", menuX + highscoreX + 350, menuY+((i+2)*20)+highscoreY);//print lowest moves
      
             }
            
             sortTimes();//sort the times
             for(int i = 0; i < highTimes.size(); i++){//iterate through all the times
-                g.drawString(highTimesNames.get(i) + " ", menuX + highscoreX + 400, menuY+((i+2)*20));//print corresponding names
-                g.drawString(highFormattedTimes.get(i), menuX + highscoreX + 550, menuY+((i+2)*20));//print formatted times
+                g.drawString(highTimesNames.get(i) + " ", menuX + highscoreX + 400, menuY+((i+2)*20)+highscoreY);//print corresponding names
+                g.drawString(highFormattedTimes.get(i), menuX + highscoreX + 550, menuY+((i+2)*20)+highscoreY);//print formatted times
      
             }
            
@@ -599,7 +606,23 @@ public class SaveDesmond2 extends Applet implements ActionListener{
            
         }
        
-       
+        //--> DESMOND GAME
+        if(desmondEncounter){//only run this code if we are playing the desmond game
+            g.setColor(blue);
+            g.fillRect(0, 0, WINDOWWIDTH, WINDOWHEIGHT);//cover the entire screen in red
+            g.setColor(white);
+            g.setFont(title);
+            g.drawString(desmondGameMessage, (WINDOWWIDTH/2)-850, 300);//print instructions
+            g.setColor(grey);
+            
+            if(!desmondGameMessage.equals("")){
+                g.drawString("the buttons", (WINDOWWIDTH/2)+395, 300);//print instructions
+            }
+            g.setColor(white);
+           
+        }
+        
+        
     }//end of graphics()
     
     public void actionPerformed(ActionEvent e){
@@ -619,6 +642,10 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     		endGame(false);
     	}else if(playX != desX || playY != desY){
     		objectiveMessage = "Find Desmond!";
+    	}
+    	
+    	if(followStatus){
+    		objectiveMessage = "Return DESMOND to home! <H>";
     	}
     	
     	if(moves > 5 && !heartSpawned){
@@ -668,7 +695,6 @@ public class SaveDesmond2 extends Applet implements ActionListener{
                     playY++;
                     moved = true;
                 }
-
 
             }
         }
@@ -784,12 +810,31 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
        
         //--> INTERACTIONS
-        if(desX == playX && desY == playY){//if desmond and player are on the same tile
-            desVisible = true;//we can see desmond
-            objectiveMessage = "RETURN DESMOND TO HOME (1, 1)";//update objective message
-            followStatus = true;//desmond will now follow the player
+        
+        //--> PLAYER & DESMOND
+        if(desX == playX && desY == playY && !followStatus){//if desmond and player are on the same tile
+            //moves the player out of their spot with the zombie and makes sure they don't go out of bounds or to another zombie
+            if(playX != 0 && gridStatus[playX-1][playY] != 2){
+                playX--;
+            }else if(playX != ROW && gridStatus[playX+1][playY] != 2){
+                playX++;
+            }else if(playY != 0 && gridStatus[playX][playY-1] != 2){
+                playY--;
+            }else if (playY != COL && gridStatus[playX][playY+1] != 2){
+                playY++;
+            }else if(playX > 1 && gridStatus[playX-2][playY] != 2){
+                playX -= 2;
+            }else if(playX < ROW-1 && gridStatus[playX+2][playY] != 2){
+                playX += 2;
+            }else if(playY > 1 && gridStatus[playX][playY-2] != 2){
+                playY -= 2;
+            }else if(playY < COL-1 && gridStatus[playX][playY+2] != 2){
+                playY += 2;
+            }
+        	desmondEncounter();
         }
-       
+        
+        //--> PLAYER & ZOMBIE
         if(gridStatus[playX][playY] == 2){//if player is on a tile with a zombie
             objectiveMessage = "A ZOMBIE ATE YOU!";//update message
            
@@ -890,6 +935,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
         //--> ZOMBIE FIGHT
         if(e.getSource() == zombieFightStart){//if we press zombie fight start button
             for(int i = 0; i < targets.length; i++){//add all targets, set them to visible
+            	targets[i].setBackground(lightGreen);
+            	targets[i].setLabel("");
                 add(targets[i]);
                 targets[i].setVisible(true);
             }
@@ -900,11 +947,16 @@ public class SaveDesmond2 extends Applet implements ActionListener{
             displayZombieTime = "Time left: " + ZOMBIETIMELIM + " seconds";
         }
        
-        //--> TARGETS
+        //--> TARGETS PRESSED
         for(int i = 0; i < targets.length; i++){//iterate through all targets
             if(e.getSource() == targets[i]){//if target is pressed
                 targets[i].setVisible(false);//make target invisible
                 targetPressed[i] = true;//update targetPressed
+                for(int j = i; j >= 0; j--){
+                	if(!targetPressed[j]){
+                		desmondMinigamefailed = true;
+                	}
+                }
                 for(int j = 0; j < targets.length; j++){
                 	targets[j].setBounds(roll(0, WINDOWWIDTH), roll(0, WINDOWHEIGHT), 50, 50);//set their coordinates to random locations on the screen
                 }
@@ -930,13 +982,31 @@ public class SaveDesmond2 extends Applet implements ActionListener{
 	        		takeZombieDamage(false);
 	        	}
 
-	            
 	        }
     	}
+    	
+    	//--> DESMOND MINIGAME START
+        if(e.getSource() == desmondGameStart){//if we press desmond fight start button
+            for(int i = 0; i < targets.length; i++){//add all targets, set them to visible
+            	targets[i].setBackground(grey);
+            	targets[i].setLabel(Integer.toString(i));//label targets with their number
+                add(targets[i]);
+                targets[i].setVisible(true);
+            }
+            desmondGameStart.setVisible(false); //hide fight button
+            desmondGameMessage = "";//empty message
+        }
+        
+    	if(desmondEncounter){
+    		 if((targetPressed[0] && targetPressed[1] && targetPressed[2] && targetPressed[3] && targetPressed[4])){//if all 5 targets are pressed
+    			 endDesmondEncounter(desmondMinigamefailed);
+	        }
+    	}
+    	
         repaint();//repaints the entire board after all of our updates
     }//end of actionlistener method
    
-    public static int roll(int min, int max){        
+    public static int roll(int min, int max){
     	//----[METHOD]----------------------------------------------------------------------------------------------------
         //This functional method roll generates a random number based on specified user minimum and maximum values
     	//PARAMETER: int min, int max --> desired minimum and maximum values from the user
@@ -1325,6 +1395,73 @@ public class SaveDesmond2 extends Applet implements ActionListener{
        
     }//end of sortTimes method
     
+    public void desmondEncounter(){
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method desmondEncounter is a method that starts the desmond encounter minigame
+    	//The function sets boolean zombieGame to true which will trigger the paint and actionPerformed method to
+    	//play the target game instead of the default game
+    	//----------------------------------------------------------------------------------------------------------------
+        desmondEncounter = true;//so that we will print zombie game section in the paint method
+        desmondGameMessage = "You have encountered DESMOND. DESMOND would like to test your intelligence. Click                      in ascending order";//update method
+        desmondMinigamefailed = false;
+        add(desmondGameStart);//add start fight button
+        //make all gameplay buttons invisible
+        desmondGameStart.setVisible(true);
+        up.setVisible(false);
+        down.setVisible(false);
+        left.setVisible(false);
+        right.setVisible(false);
+        win.setVisible(false);
+        cheat.setVisible(false);
+        giveUp.setVisible(false);
+        easy.setVisible(false);
+        medium.setVisible(false);
+        hard.setVisible(false);
+        repaint();//refresh screen
+       
+    }
+    
+    public void endDesmondEncounter(boolean loseLife){
+        //----[METHOD]----------------------------------------------------------------------------------------------------
+        //This procedural method endDesmondEncounter will run when the user loses the desmond minigame
+    	//PARAMETER: loseLife --> method will remove a life if loseLife is true
+    	//----------------------------------------------------------------------------------------------------------------
+        desmondEncounter = false;//end zombie game
+        
+        if(loseLife) {
+        	objectiveMessage = "You proved to be too stupid and DESMOND took one of your lives!";
+        	lives--;//decrease the number of lives      	
+        }else {
+        	objectiveMessage = "You proved your worth!";
+            desVisible = true;//we can see desmond
+            objectiveMessage = "RETURN DESMOND TO HOME (1, 1)";//update objective message
+            followStatus = true;//desmond will now follow the player
+        }
+		
+        //make all of the buttons visible again
+        up.setVisible(true);
+        down.setVisible(true);
+        left.setVisible(true);
+        right.setVisible(true);
+        win.setVisible(true);
+        cheat.setVisible(true);
+        giveUp.setVisible(true);
+        easy.setVisible(true);
+        medium.setVisible(true);
+        hard.setVisible(true);
+        desmondGameStart.setVisible(false);
+
+        for(int i = 0; i < targetPressed.length; i++){//iterate through targetPressed and set all to false to prepare for next time we play the zombie minigame
+            targetPressed[i] = false;
+            targets[i].setVisible(false);//make target invisible
+        }
+        
+		if(lives <= 0) {//if the lives reaches 0
+    		objectiveMessage = "You have 0 lives, you died!";
+    		endGame(false);//end the game, with a loss
+		}
+    }
+    
     public void zombieFight(){
         //----[METHOD]----------------------------------------------------------------------------------------------------
         //This procedural method zombieFight is a method that starts the zombie target fight minigame
@@ -1355,9 +1492,8 @@ public class SaveDesmond2 extends Applet implements ActionListener{
     
     public void takeZombieDamage(boolean loseLife) {
         //----[METHOD]----------------------------------------------------------------------------------------------------
-        //This procedural method takeZombieDamage will de
-    	//The function sets boolean zombieGame to true which will trigger the paint and actionPerformed method to
-    	//play the target game instead of the default game
+        //This procedural method takeZombieDamage will run when the user loses the zombie minigame
+    	//PARAMETER: loseLife --> method will remove a life if loseLife is true
     	//----------------------------------------------------------------------------------------------------------------
         zombieGame = false;//end zombie game
         
