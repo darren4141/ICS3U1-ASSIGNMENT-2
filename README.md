@@ -29,3 +29,7 @@ Task: Find a lost child (Desmond) who randomly moves once per turn, and bring th
 - Extended the board size to 17x17
 - Random number of zombies (14-18)
 - Desmond and zombies move randomly whilst avoiding obstacles (decaying path, other NPC's, powerup)
+
+### Bugs that I accidentally handed in:
+- If you press enter at the very start it takes you straight to the desmond minigame
+- EASY, MEDIUM, and HARD lines on the welcome message are coloured wrong - colour is shifted down by one
