@@ -284,7 +284,8 @@ public class SaveDesmondApplet extends Applet implements ActionListener{
         start.addActionListener(this);//make it so that start can be clicked, actions on start will be sent to actionPerformed
         nameInput = new TextField("                ");//create a text field to input the name, spaces are for resizing
         nameInput.setText("");//empty the text field
-        nameInput.addActionListener(this);//make it so that text can be taken from the textField
+        //vvvv THIS WAS HANDED IN UNCOMMENTED AND CAUSED THE WORST BUG vvvv
+        //nameInput.addActionListener(this);//make it so that text can be taken from the textField
         add(nameInput);//add textfield to the window
         add(start);//add button to the window
        
@@ -641,15 +642,29 @@ public class SaveDesmondApplet extends Applet implements ActionListener{
             g.drawString(welcomeMessage[4], WELCOMEX, WELCOMEY);
             g.setColor(black);
             g.drawString(welcomeMessage[5], WELCOMEX, WELCOMEY+40);
-            g.drawString(welcomeMessage[6], WELCOMEX, WELCOMEY+80);
+            
+            //ORIGINAL CODE THAT I HANDED IN --> INCORRECT COLOURING
+//            g.drawString(welcomeMessage[6], WELCOMEX, WELCOMEY+80);
+//            g.setColor(lightGreen);
+//            g.drawString(welcomeMessage[7], WELCOMEX, WELCOMEY+120);
+//            g.setColor(orange);
+//            g.drawString(welcomeMessage[8], WELCOMEX, WELCOMEY+160);
+//            g.setColor(red);
+//            g.drawString(welcomeMessage[9], WELCOMEX, WELCOMEY+200);
+//            g.setColor(black);
+//            g.drawString(welcomeMessage[10], WELCOMEX, WELCOMEY+240); 
+            
+            //FIXED COLOURING{
             g.setColor(lightGreen);
-            g.drawString(welcomeMessage[7], WELCOMEX, WELCOMEY+120);
+            g.drawString(welcomeMessage[6], WELCOMEX, WELCOMEY+80);
             g.setColor(orange);
-            g.drawString(welcomeMessage[8], WELCOMEX, WELCOMEY+160);
+            g.drawString(welcomeMessage[7], WELCOMEX, WELCOMEY+120);
             g.setColor(red);
-            g.drawString(welcomeMessage[9], WELCOMEX, WELCOMEY+200);
+            g.drawString(welcomeMessage[8], WELCOMEX, WELCOMEY+160);
             g.setColor(black);
-            g.drawString(welcomeMessage[10], WELCOMEX, WELCOMEY+240);     
+            g.drawString(welcomeMessage[9], WELCOMEX, WELCOMEY+200);
+            g.drawString(welcomeMessage[10], WELCOMEX, WELCOMEY+240);      
+          //}
         }
        
         //--> ZOMBIE GAME
