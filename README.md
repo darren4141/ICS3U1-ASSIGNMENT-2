@@ -34,5 +34,30 @@ Task: Find a lost child (Desmond) who randomly moves once per turn, and bring th
 - If you press enter at the very start it takes you straight to the desmond minigame
 - EASY, MEDIUM, and HARD lines on the welcome message are coloured wrong - colour is shifted down by one
 
+### IF I HAD A TIME MACHINE
+- I WOULD COMMENT OUT LINE 287 AND FIX THE ENTIRE GAME
+> nameInput.addActionListener(this);
+
+- I WOULD FIX THE COLOURING AT LINES 164 - 169 FROM
+>           g.drawString(welcomeMessage[6], WELCOMEX, WELCOMEY+80);
+>           g.setColor(lightGreen);
+>           g.drawString(welcomeMessage[7], WELCOMEX, WELCOMEY+120);
+>           g.setColor(orange);
+>           g.drawString(welcomeMessage[8], WELCOMEX, WELCOMEY+160);
+>           g.setColor(red);
+>           g.drawString(welcomeMessage[9], WELCOMEX, WELCOMEY+200);
+>           g.setColor(black);
+>           g.drawString(welcomeMessage[10], WELCOMEX, WELCOMEY+240);    
+TO
+>           g.setColor(lightGreen);
+>           g.drawString(welcomeMessage[6], WELCOMEX, WELCOMEY+80);
+>           g.setColor(orange);
+>           g.drawString(welcomeMessage[7], WELCOMEX, WELCOMEY+120);
+>           g.setColor(red);
+>           g.drawString(welcomeMessage[8], WELCOMEX, WELCOMEY+160);
+>           g.setColor(black);
+>           g.drawString(welcomeMessage[9], WELCOMEX, WELCOMEY+200);
+>           g.drawString(welcomeMessage[10], WELCOMEX, WELCOMEY+240);    
+
 ### What I lost marks for
 Program not marked yet
