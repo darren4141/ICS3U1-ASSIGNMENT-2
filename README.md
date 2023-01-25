@@ -59,5 +59,5 @@ TO
 >           g.drawString(welcomeMessage[9], WELCOMEX, WELCOMEY+200);
 >           g.drawString(welcomeMessage[10], WELCOMEX, WELCOMEY+240);    
 
-### What I lost marks for
-Program not marked yet
+### Final mark:
+10/10 no comments from teacher
